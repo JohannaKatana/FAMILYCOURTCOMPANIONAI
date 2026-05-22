@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Family Court Companion AI"
+version = "1.0.0"
+id = "artifacts/family-court-companion"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23212
+
+[services.development]
+run = "pnpm --filter @workspace/family-court-companion run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/family-court-companion", "run", "build" ]
+publicDir = "artifacts/family-court-companion/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23212"
+BASE_PATH = "/"
