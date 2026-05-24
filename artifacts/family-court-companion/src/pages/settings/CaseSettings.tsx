@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,10 +9,32 @@ import { Separator } from "@/components/ui/separator";
 import { AlertTriangle, Trash2, Archive } from "lucide-react";
 import { motion } from "framer-motion";
 import { mockFloridaCase, US_STATES } from "@/data/mockData";
-import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CaseSettings() {
   const [represented, setRepresented] = useState(mockFloridaCase.isRepresented);
+  const [saving, setSaving] = useState(false);
+  const { toast } = useToast();
+
+  function handleSave() {
+    setSaving(true);
+    setTimeout(() => {
+      setSaving(false);
+      toast({ title: "Case settings saved", description: "Your case information has been updated." });
+    }, 600);
+  }
+
+  function handleArchive() {
+    toast({ title: "Case archived", description: "Martinez v. Thompson has been archived. You can restore it from Settings." });
+  }
+
+  function handleDelete() {
+    toast({
+      title: "Confirmation required",
+      description: "To permanently delete this case, please contact support. This action cannot be undone.",
+      variant: "destructive",
+    });
+  }
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -73,7 +96,9 @@ export default function CaseSettings() {
             </div>
           )}
 
-          <Button className="w-full" data-testid="button-save-case">Save Changes</Button>
+          <Button className="w-full" onClick={handleSave} disabled={saving} data-testid="button-save-case">
+            {saving ? "Saving..." : "Save Changes"}
+          </Button>
         </CardContent>
       </Card>
 
@@ -90,7 +115,7 @@ export default function CaseSettings() {
               <p className="font-medium text-sm">Archive this case</p>
               <p className="text-xs text-muted-foreground mt-0.5">Hides from dashboard but preserves all data</p>
             </div>
-            <Button variant="outline" size="sm" className="gap-1.5 border-destructive/30 text-destructive hover:text-destructive shrink-0" data-testid="button-archive-case">
+            <Button variant="outline" size="sm" className="gap-1.5 border-destructive/30 text-destructive hover:text-destructive shrink-0" onClick={handleArchive} data-testid="button-archive-case">
               <Archive className="h-3.5 w-3.5" />
               Archive
             </Button>
@@ -101,7 +126,7 @@ export default function CaseSettings() {
               <p className="font-medium text-sm">Delete this case</p>
               <p className="text-xs text-muted-foreground mt-0.5">Permanently removes all evidence, documents, and data. Cannot be undone.</p>
             </div>
-            <Button variant="destructive" size="sm" className="gap-1.5 shrink-0" data-testid="button-delete-case">
+            <Button variant="destructive" size="sm" className="gap-1.5 shrink-0" onClick={handleDelete} data-testid="button-delete-case">
               <Trash2 className="h-3.5 w-3.5" />
               Delete
             </Button>

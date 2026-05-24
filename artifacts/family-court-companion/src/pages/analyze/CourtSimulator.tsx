@@ -1,18 +1,19 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import { DisclaimerBanner } from "@/components/app/DisclaimerBanner";
 import { SeverityBadge } from "@/components/app/SeverityBadge";
 import { QuoteBlock } from "@/components/app/QuoteBlock";
-import { Loader2, ChevronDown, ChevronUp, RotateCcw, MessageSquare, BookOpen, Link2 } from "lucide-react";
+import { Loader2, ChevronDown, ChevronUp, RotateCcw, MessageSquare, BookOpen, Link2, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
 
 type SimulatorState = "setup" | "results";
 
 const MOCK_QUESTIONS = [
   {
-    id: "q1",
-    number: 1,
+    id: "q1", number: 1,
     question: "Ms. Martinez, isn't it true that you frequently deny Mr. Thompson access to the children beyond the court order?",
     whyMatters: "Opposing counsel may use this to establish a pattern of interference and challenge your willingness to support the children's relationship with their father.",
     triggeringEvidence: "Scheduling dispute — May 14 text thread",
@@ -21,8 +22,7 @@ const MOCK_QUESTIONS = [
     riskScore: 7
   },
   {
-    id: "q2",
-    number: 2,
+    id: "q2", number: 2,
     question: "Why did you fail to notify Mr. Thompson about Sofia's school enrollment change at Westchase Elementary in September 2025?",
     whyMatters: "This tests your compliance with joint decision-making provisions and your transparency regarding the children's education.",
     triggeringEvidence: "School enrollment — unauthorized change letter",
@@ -31,8 +31,7 @@ const MOCK_QUESTIONS = [
     riskScore: 5
   },
   {
-    id: "q3",
-    number: 3,
+    id: "q3", number: 3,
     question: "How do you respond to Mr. Thompson's claim that you use the children as messengers to communicate his schedule changes?",
     whyMatters: "Using children as messengers is viewed negatively by courts and reflects on your willingness to co-parent appropriately.",
     triggeringEvidence: "Communication pattern — 23 hostile message incidents",
@@ -41,8 +40,7 @@ const MOCK_QUESTIONS = [
     riskScore: 4
   },
   {
-    id: "q4",
-    number: 4,
+    id: "q4", number: 4,
     question: "You've stated that Mr. Thompson is non-responsive. Were there any extended periods where you also did not respond to his messages?",
     whyMatters: "Opposing counsel may attempt to establish mutual communication failures to neutralize your evidence.",
     triggeringEvidence: "33-hour non-response — fever notification April 2",
@@ -51,8 +49,7 @@ const MOCK_QUESTIONS = [
     riskScore: 6
   },
   {
-    id: "q5",
-    number: 5,
+    id: "q5", number: 5,
     question: "Has there been any period where Sofia or Lucas expressed a preference to spend more time with Mr. Thompson?",
     whyMatters: "Child preference is one of the statutory factors. If the children have expressed contrary preferences, this must be addressed.",
     triggeringEvidence: "Children's Preferences — only 1 weak evidence entry",
@@ -70,16 +67,26 @@ export default function CourtSimulator() {
   const [role, setRole] = useState<"asked" | "asking">("asked");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState("All Issues");
+  const [practicing, setPracticing] = useState<string | null>(null);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [savedNotes, setSavedNotes] = useState<Set<string>>(new Set());
+  const { toast } = useToast();
 
   function toggleExpand(id: string) {
     const next = new Set(expanded);
     if (next.has(id)) next.delete(id); else next.add(id);
     setExpanded(next);
+    if (!next.has(id)) setPracticing(null);
   }
 
   function handleGenerate() {
     setGenerating(true);
     setTimeout(() => { setGenerating(false); setSimState("results"); }, 1800);
+  }
+
+  function handleSaveNote(q: typeof MOCK_QUESTIONS[0]) {
+    setSavedNotes((prev) => new Set([...prev, q.id]));
+    toast({ title: "Saved to preparation notes", description: `"${q.question.slice(0, 50)}..." added to your notes.` });
   }
 
   if (simState === "setup") {
@@ -172,7 +179,7 @@ export default function CourtSimulator() {
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div>
                     <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider block mb-1">
-                      Opposing Counsel Question #{q.number}
+                      {role === "asked" ? "Opposing Counsel Question" : "Your Question"} #{q.number}
                     </span>
                     <p className="font-medium text-sm leading-snug">{q.question}</p>
                   </div>
@@ -199,6 +206,35 @@ export default function CourtSimulator() {
                       <p className="text-xs font-medium mb-1">Likely follow-up</p>
                       <p className="text-xs italic text-muted-foreground">"{q.followUp}"</p>
                     </div>
+
+                    {practicing === q.id && (
+                      <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="space-y-2">
+                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Your Practice Answer</p>
+                        <Textarea
+                          placeholder="Type your answer here to practice how you would respond in court..."
+                          className="min-h-[100px] text-sm"
+                          value={answers[q.id] ?? ""}
+                          onChange={(e) => setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))}
+                          autoFocus
+                        />
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            className="h-7 text-xs gap-1"
+                            onClick={() => {
+                              toast({ title: "Practice answer saved", description: "Your answer has been recorded for this question." });
+                              setPracticing(null);
+                            }}
+                          >
+                            <CheckCircle2 className="h-3 w-3" />
+                            Save Answer
+                          </Button>
+                          <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setPracticing(null)}>
+                            Cancel
+                          </Button>
+                        </div>
+                      </motion.div>
+                    )}
                   </motion.div>
                 )}
 
@@ -207,13 +243,31 @@ export default function CourtSimulator() {
                     {expanded.has(q.id) ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                     {expanded.has(q.id) ? "Less" : "Strategy + Details"}
                   </Button>
-                  <Button size="sm" variant="ghost" className="h-7 text-xs gap-1" data-testid={`button-practice-${q.id}`}>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className={`h-7 text-xs gap-1 ${practicing === q.id ? "text-primary" : ""}`}
+                    onClick={() => {
+                      if (!expanded.has(q.id)) {
+                        setExpanded((prev) => new Set([...prev, q.id]));
+                      }
+                      setPracticing(practicing === q.id ? null : q.id);
+                    }}
+                    data-testid={`button-practice-${q.id}`}
+                  >
                     <MessageSquare className="h-3 w-3" />
-                    Practice Answer
+                    {answers[q.id] ? "Edit Answer" : "Practice Answer"}
                   </Button>
-                  <Button size="sm" variant="ghost" className="h-7 text-xs gap-1" data-testid={`button-save-prep-${q.id}`}>
-                    <BookOpen className="h-3 w-3" />
-                    Save to Notes
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className={`h-7 text-xs gap-1 ${savedNotes.has(q.id) ? "text-primary" : ""}`}
+                    onClick={() => handleSaveNote(q)}
+                    disabled={savedNotes.has(q.id)}
+                    data-testid={`button-save-prep-${q.id}`}
+                  >
+                    {savedNotes.has(q.id) ? <CheckCircle2 className="h-3 w-3" /> : <BookOpen className="h-3 w-3" />}
+                    {savedNotes.has(q.id) ? "Saved" : "Save to Notes"}
                   </Button>
                 </div>
               </CardContent>

@@ -1,4 +1,4 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Scale, BookOpen, User, Calendar, DollarSign, ArrowRight, Clock, Edit } from "lucide-react";
@@ -14,8 +14,8 @@ const DOC_TYPES = [
 ];
 
 const RECENT_DRAFTS = [
-  { id: "d1", type: "Case Narrative Timeline", date: "May 18, 2026", wordCount: "1,240 words", state: "draft" },
-  { id: "d2", type: "Motion Draft — Late Pickup", date: "May 12, 2026", wordCount: "620 words", state: "complete" },
+  { id: "d1", type: "Case Narrative Timeline", date: "May 18, 2026", wordCount: "1,240 words", state: "draft", href: "/documents/narrative" },
+  { id: "d2", type: "Motion Draft — Late Pickup", date: "May 12, 2026", wordCount: "620 words", state: "complete", href: "/documents/motion" },
 ];
 
 const FL_TEMPLATES = [
@@ -31,6 +31,8 @@ const CA_TEMPLATES = [
 ];
 
 export default function DocumentsHub() {
+  const [, setLocation] = useLocation();
+
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
@@ -86,12 +88,16 @@ export default function DocumentsHub() {
                     </span>
                   </div>
                 </div>
-                <div className="flex gap-1">
-                  <Button size="sm" variant="outline" className="h-8 gap-1.5 text-xs" data-testid={`button-edit-draft-${draft.id}`}>
-                    <Edit className="h-3.5 w-3.5" />
-                    Edit
-                  </Button>
-                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 gap-1.5 text-xs"
+                  onClick={() => setLocation(draft.href)}
+                  data-testid={`button-edit-draft-${draft.id}`}
+                >
+                  <Edit className="h-3.5 w-3.5" />
+                  Edit
+                </Button>
               </CardContent>
             </Card>
           ))}
@@ -99,7 +105,7 @@ export default function DocumentsHub() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {[{ state: "FL", label: "Florida", templates: FL_TEMPLATES }, { state: "CA", label: "California", templates: CA_TEMPLATES }].map((group) => (
+        {[{ state: "FL", label: "Florida", templates: FL_TEMPLATES, href: "/documents/motion" }, { state: "CA", label: "California", templates: CA_TEMPLATES, href: "/documents/motion" }].map((group) => (
           <Card key={group.state}>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm flex items-center gap-2">
@@ -109,7 +115,12 @@ export default function DocumentsHub() {
             </CardHeader>
             <CardContent className="space-y-2">
               {group.templates.map((t, i) => (
-                <button key={i} className="w-full text-left text-xs text-muted-foreground hover:text-foreground flex items-start gap-2 group transition-colors" data-testid={`template-${group.state.toLowerCase()}-${i}`}>
+                <button
+                  key={i}
+                  className="w-full text-left text-xs text-muted-foreground hover:text-foreground flex items-start gap-2 group transition-colors"
+                  onClick={() => setLocation(group.href)}
+                  data-testid={`template-${group.state.toLowerCase()}-${i}`}
+                >
                   <FileText className="h-3.5 w-3.5 mt-0.5 shrink-0 group-hover:text-primary transition-colors" />
                   {t}
                 </button>

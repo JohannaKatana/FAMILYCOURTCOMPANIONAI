@@ -161,11 +161,27 @@ export default function MotionBriefGenerator() {
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold">Document Draft</h2>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="h-7 gap-1.5 text-xs" data-testid="button-copy-doc">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 gap-1.5 text-xs"
+                  onClick={() => {
+                    navigator.clipboard.writeText(MOCK_DRAFT).then(() =>
+                      toast({ title: "Copied to clipboard", description: "Document draft copied. Paste into a word processor for editing." })
+                    );
+                  }}
+                  data-testid="button-copy-doc"
+                >
                   <Copy className="h-3 w-3" />
                   Copy
                 </Button>
-                <Button size="sm" variant="outline" className="h-7 gap-1.5 text-xs" data-testid="button-download-docx">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 gap-1.5 text-xs"
+                  onClick={() => toast({ title: "DOCX export requires Pro plan", description: "Upgrade to Pro to download editable Word documents." })}
+                  data-testid="button-download-docx"
+                >
                   <Download className="h-3 w-3" />
                   DOCX
                 </Button>

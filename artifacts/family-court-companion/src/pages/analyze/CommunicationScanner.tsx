@@ -10,6 +10,7 @@ import { QuoteBlock } from "@/components/app/QuoteBlock";
 import { UploadCard } from "@/components/app/UploadCard";
 import { Lock, Zap, Search, History, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
 
 const SEARCH_CHIPS = ["abuse", "late", "money", "interference", "safety", "non-cooperation", "schedule", "threats"];
 
@@ -30,6 +31,8 @@ export default function CommunicationScanner() {
   const [showResults, setShowResults] = useState(false);
   const [text, setText] = useState("");
   const [chips, setChips] = useState<Set<string>>(new Set());
+  const [viewingScan, setViewingScan] = useState<string | null>(null);
+  const { toast } = useToast();
 
   function toggleChip(c: string) {
     const next = new Set(chips);
@@ -49,6 +52,20 @@ export default function CommunicationScanner() {
 [2026-04-02 21:14] Maria: Sofia has a 103 fever. She needs to see the doctor tomorrow.
 [2026-04-04 18:20] David: I was busy. She's fine.
 [2026-04-27 09:30] David: I already signed him up. You'll have to work around it.`);
+  }
+
+  function handleSearchAll() {
+    toast({ title: "Searching all saved scans...", description: "Found matches across 2 previous scans. Results shown below." });
+    setShowResults(true);
+  }
+
+  function handleAutoScan() {
+    toast({ title: "Auto-Scan requires Plus plan", description: "Upgrade to Plus to automatically scan all saved evidence for patterns." });
+  }
+
+  function handleViewScan(id: string) {
+    setViewingScan(viewingScan === id ? null : id);
+    setShowResults(true);
   }
 
   return (
@@ -138,11 +155,11 @@ export default function CommunicationScanner() {
           {scanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
           {scanning ? "Scanning..." : "Search Current Text"}
         </Button>
-        <Button variant="outline" className="gap-1.5" data-testid="button-search-all">
+        <Button variant="outline" className="gap-1.5" onClick={handleSearchAll} data-testid="button-search-all">
           <History className="h-4 w-4" />
           Search All Scans
         </Button>
-        <Button variant="outline" className="gap-1.5" data-testid="button-auto-scan">
+        <Button variant="outline" className="gap-1.5" onClick={handleAutoScan} data-testid="button-auto-scan">
           <Zap className="h-4 w-4" />
           Auto-Scan All
         </Button>
@@ -168,14 +185,16 @@ export default function CommunicationScanner() {
         </h2>
         <div className="space-y-2">
           {PREVIOUS_SCANS.map((scan) => (
-            <Card key={scan.id} className="hover:border-primary/30 transition-colors cursor-pointer" data-testid={`previous-scan-${scan.id}`}>
+            <Card key={scan.id} className={`hover:border-primary/30 transition-colors cursor-pointer ${viewingScan === scan.id ? "border-primary/50 bg-primary/5" : ""}`} data-testid={`previous-scan-${scan.id}`}>
               <CardContent className="p-3">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">{scan.preview}</p>
                     <p className="text-xs text-muted-foreground">{scan.date} · {scan.summary}</p>
                   </div>
-                  <Button size="sm" variant="ghost" className="h-7 text-xs">View</Button>
+                  <Button size="sm" variant={viewingScan === scan.id ? "default" : "ghost"} className="h-7 text-xs" onClick={() => handleViewScan(scan.id)}>
+                    {viewingScan === scan.id ? "Hide" : "View"}
+                  </Button>
                 </div>
               </CardContent>
             </Card>

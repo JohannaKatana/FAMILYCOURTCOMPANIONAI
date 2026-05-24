@@ -4,9 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EvidenceCard } from "@/components/app/EvidenceCard";
 import { EmptyState } from "@/components/app/EmptyState";
-import { Search, Filter, X, Layers, Clock, Archive } from "lucide-react";
+import { Search, X, Layers, Clock, Archive } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { mockEvidenceEntries } from "@/data/mockData";
+import type { EvidenceEntry } from "@/data/mockData";
+import { useToast } from "@/hooks/use-toast";
 
 const CATEGORIES = ["All", "Scheduling", "Communication", "Co-Parenting", "Financial", "Medical / Safety", "Legal / Discovery", "Activities / Education", "Children's Preferences"];
 
@@ -15,8 +17,10 @@ export default function EvidenceLibrary() {
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState("newest");
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [entries, setEntries] = useState<EvidenceEntry[]>(mockEvidenceEntries);
+  const { toast } = useToast();
 
-  const filtered = mockEvidenceEntries
+  const filtered = entries
     .filter((e) => {
       const matchesQuery = !query || e.title.toLowerCase().includes(query.toLowerCase()) || e.summary.toLowerCase().includes(query.toLowerCase());
       const matchesCat = category === "All" || e.category === category;
@@ -34,12 +38,31 @@ export default function EvidenceLibrary() {
     setSelected(next);
   }
 
-  function selectAll() {
-    setSelected(new Set(filtered.map((e) => e.id)));
+  function selectAll() { setSelected(new Set(filtered.map((e) => e.id))); }
+  function clearSelection() { setSelected(new Set()); }
+
+  function handlePin(id: string) {
+    setEntries((prev) => prev.map((e) => e.id === id ? { ...e, pinned: !e.pinned } : e));
+    const entry = entries.find((e) => e.id === id);
+    toast({ title: entry?.pinned ? "Entry unpinned" : "Entry pinned" });
   }
 
-  function clearSelection() {
-    setSelected(new Set());
+  function handleDelete(id: string) {
+    const entry = entries.find((e) => e.id === id);
+    setEntries((prev) => prev.filter((e) => e.id !== id));
+    setSelected((prev) => { const next = new Set(prev); next.delete(id); return next; });
+    toast({ title: "Entry deleted", description: `"${entry?.title}" removed.` });
+  }
+
+  function handleBulkAddToPacket() {
+    toast({ title: `${selected.size} entries added to packet`, description: "Go to Packet → Exhibit Binder to review." });
+    clearSelection();
+  }
+
+  function handleBulkArchive() {
+    setEntries((prev) => prev.filter((e) => !selected.has(e.id)));
+    toast({ title: `${selected.size} entries archived` });
+    clearSelection();
   }
 
   return (
@@ -47,7 +70,7 @@ export default function EvidenceLibrary() {
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold">Evidence Library</h1>
-          <p className="text-sm text-muted-foreground">{mockEvidenceEntries.length} total entries</p>
+          <p className="text-sm text-muted-foreground">{entries.length} total entries</p>
         </div>
       </motion.div>
 
@@ -56,7 +79,7 @@ export default function EvidenceLibrary() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input className="pl-9" placeholder="Search evidence..." value={query} onChange={(e) => setQuery(e.target.value)} data-testid="input-search-evidence" />
           {query && (
-            <button className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setQuery("")} data-testid="button-clear-search">
+            <button className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setQuery("")}>
               <X className="h-4 w-4" />
             </button>
           )}
@@ -90,21 +113,19 @@ export default function EvidenceLibrary() {
         <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="bg-primary/5 border border-primary/20 rounded-xl p-3 flex items-center gap-3 flex-wrap">
           <span className="text-sm font-medium text-primary">{selected.size} selected</span>
           <div className="flex gap-2 ml-auto">
-            <Button size="sm" variant="outline" className="gap-1.5 h-8" data-testid="button-bulk-packet">
+            <Button size="sm" variant="outline" className="gap-1.5 h-8" onClick={handleBulkAddToPacket}>
               <Layers className="h-3.5 w-3.5" />
               Add to Packet
             </Button>
-            <Button size="sm" variant="outline" className="gap-1.5 h-8" data-testid="button-bulk-timeline">
+            <Button size="sm" variant="outline" className="gap-1.5 h-8" onClick={() => toast({ title: "Timeline view coming soon" })}>
               <Clock className="h-3.5 w-3.5" />
               Timeline
             </Button>
-            <Button size="sm" variant="outline" className="gap-1.5 h-8" data-testid="button-bulk-archive">
+            <Button size="sm" variant="outline" className="gap-1.5 h-8" onClick={handleBulkArchive}>
               <Archive className="h-3.5 w-3.5" />
               Archive
             </Button>
-            <Button size="sm" variant="ghost" className="h-8" onClick={clearSelection} data-testid="button-clear-selection">
-              Clear
-            </Button>
+            <Button size="sm" variant="ghost" className="h-8" onClick={clearSelection}>Clear</Button>
           </div>
         </motion.div>
       )}
@@ -112,9 +133,9 @@ export default function EvidenceLibrary() {
       <div className="flex items-center justify-between text-xs text-muted-foreground">
         <span>{filtered.length} result{filtered.length !== 1 ? "s" : ""}</span>
         {selected.size < filtered.length ? (
-          <button className="text-primary hover:underline" onClick={selectAll} data-testid="button-select-all">Select all</button>
+          <button className="text-primary hover:underline" onClick={selectAll}>Select all</button>
         ) : (
-          <button className="text-primary hover:underline" onClick={clearSelection} data-testid="button-deselect-all">Deselect all</button>
+          <button className="text-primary hover:underline" onClick={clearSelection}>Deselect all</button>
         )}
       </div>
 
@@ -130,6 +151,8 @@ export default function EvidenceLibrary() {
                   selectable
                   selected={selected.has(entry.id)}
                   onSelect={toggleSelect}
+                  onPin={handlePin}
+                  onDelete={handleDelete}
                 />
               </motion.div>
             ))}
