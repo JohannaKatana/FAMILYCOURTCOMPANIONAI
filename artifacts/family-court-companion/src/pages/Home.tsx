@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus, Search, Layers, Activity, CalendarDays, FileText } from "lucide-react";
 import { motion } from "framer-motion";
+import { CaseReadinessMeter } from "@/components/app/CaseReadinessMeter";
+import { mockEvidenceEntries } from "@/data/mockData";
 
 function daysUntil(dateStr: string): number {
   const target = new Date(dateStr);
@@ -88,6 +90,8 @@ export default function HomeDashboard() {
           </Link>
         ))}
       </div>
+
+      <CaseReadinessMeter entries={mockEvidenceEntries} />
 
       <div>
         <h2 className="text-lg font-semibold mb-3">Quick Actions</h2>

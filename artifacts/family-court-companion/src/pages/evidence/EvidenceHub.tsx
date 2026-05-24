@@ -7,6 +7,7 @@ import { Plus, Upload, Lightbulb, ChevronDown, ChevronUp } from "lucide-react";
 import { motion } from "framer-motion";
 import { EvidenceCard } from "@/components/app/EvidenceCard";
 import { EmptyState } from "@/components/app/EmptyState";
+import { CaseReadinessMeter } from "@/components/app/CaseReadinessMeter";
 import { mockEvidenceEntries } from "@/data/mockData";
 import type { EvidenceEntry } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
@@ -64,6 +65,8 @@ export default function EvidenceHub() {
           </Button>
         </Link>
       </motion.div>
+
+      <CaseReadinessMeter entries={entries} />
 
       <Link href="/evidence/upload">
         <Card className="border-dashed border-2 hover:border-primary/60 hover:bg-primary/5 transition-colors cursor-pointer">
