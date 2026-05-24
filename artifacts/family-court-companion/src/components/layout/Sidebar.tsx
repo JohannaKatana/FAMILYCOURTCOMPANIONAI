@@ -4,7 +4,7 @@ import {
   Home, FileText, Activity, FileStack, Briefcase,
   Moon, Sun, Settings, LogOut, ChevronDown, ChevronRight,
   Search, BarChart2, GitBranch, ScanLine, Scale,
-  BookOpen, FileEdit, Layers, Share2, Eye
+  BookOpen, FileEdit, Layers, Share2, Eye, Sparkles
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -18,7 +18,8 @@ const navItems: NavItem[] = [
     { name: "Add Evidence", href: "/evidence/upload", icon: FileEdit },
     { name: "Library", href: "/evidence/library", icon: Layers },
   ]},
-  { name: "Analyze", href: "/analyze/scanner", icon: Activity, children: [
+  { name: "Analyze", href: "/analyze/intelligence", icon: Activity, children: [
+    { name: "Case Intelligence", href: "/analyze/intelligence", icon: Sparkles },
     { name: "Comm Scanner", href: "/analyze/scanner", icon: Search },
     { name: "Gap Detector", href: "/analyze/gaps", icon: GitBranch },
     { name: "Court Simulator", href: "/analyze/simulator", icon: Scale },

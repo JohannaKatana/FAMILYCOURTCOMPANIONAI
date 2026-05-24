@@ -1,0 +1,106 @@
+add this to our app: Use screenshot as a reference
+a mobile-first dashboard section for a family law case analysis app inspired by modern financial analytics cards.
+
+Design style:
+- similar aesthetic to app 
+- rounded cards
+- soft borders
+- subtle shadows
+- compact infographic layout
+- modern data-visualization look
+- mobile-first but responsive for tablet and desktop
+- clean typography
+- premium, serious, trustworthy legal-tech feel
+- not playful, not generic SaaS
+
+Build a “Case Intelligence Dashboard” section with a card grid similar to a finance app analytics layout.
+
+Include these cards:
+
+For your app, this means you do not want one huge legal chart page. You want a “case intelligence section” made of small, scannable cards that each answer a different family-law question.
+
+Best family-law visuals
+For a family-law case analysis dashboard, the most helpful equivalents would be these:
+
+Graphic type	What it should measure	Why it helps
+Timeline line chart	Evidence entries over time, incidents by week/month	Shows escalation, frequency, and sustained patterns.
+Stacked bar chart	Incident categories by month: scheduling, communication, safety, co-parenting, education	Helps show what type of issues dominate the case.
+Factor coverage chart	Covered vs weak vs missing custody factors by state standard	Makes legal gaps instantly visible.
+Response delay chart	Average response times and ignored requests over time	Useful for non-cooperation and communication breakdown analysis.
+Pattern frequency chart	Gaslighting, interference, unilateral decisions, threats, manipulation	Shows repeated conduct rather than one-off events.
+Parenting-time compliance chart	Ordered exchanges vs completed vs late/cancelled	Strong for custody/order-enforcement cases.
+Exhibit strength ranking	Top strongest evidence items by score/confidence/witness support	Helps curate packet and attorney review.
+Source breakdown donut	Evidence source mix: texts, emails, notes, photos, school records, medical docs	Shows case diversity and corroboration.
+Witness/corroboration chart	Entries with witnesses, documents, or timestamp support	Helps show proof quality, not just quantity.
+Court-packet readiness card	Number of exhibits ready, missing labels, missing dates, missing corroboration	Good operational metric for user action.
+These are more useful than generic finance-style widgets because they directly support litigation prep: pattern proof, chronology, custody-factor coverage, and corroboration strength.
+
+Best “patterns” to visualize
+For family-law case analysis, these are the strongest recurring patterns to visualize:
+
+Missed or changed exchanges.
+
+Late pickups/drop-offs.
+
+Ignored co-parenting requests.
+
+Refusal to share school or medical information.
+
+Hostile or threatening communication spikes.
+
+Unilateral decision-making.
+
+Children being used as messengers.
+
+Interference with parenting time.
+
+Safety-related incidents.
+
+Repeated last-minute cancellations.
+
+A strong dashboard should help the user answer:
+
+Is the behavior isolated or repeated?
+
+Is it getting worse over time?
+
+Which legal factors does it affect?
+
+What evidence is strongest?
+
+What is still missing before court?
+
+Suggested dashboard section
+A legal version of this Monarch-style section in your app could look like:
+
+Main chart: “Case Activity Over Time” line chart showing total evidence entries and major incident spikes.
+
+Top-right chart: “Communication & Compliance Trends” combo chart with bars for incidents per month and line for average response delay.
+
+KPI cards: total evidence entries, weak factors, high-risk patterns, packet readiness.
+
+Breakdown chart: horizontal bars for top issue categories.
+
+Feed card: latest evidence entries or recent critical incidents.
+
+Progress cards: factor coverage and court-packet completion.
+
+That gives you the same visual feel as the screenshot, but tailored to legal case prep rather than budgeting.
+
+
+
+Use realistic demo data for a custody case.
+
+UX requirements:
+- Each card should feel like an infographic
+- Add tiny legends, muted labels, and clear hierarchy
+- Cards should be scannable on a phone
+- Show hover states on web and tap-friendly states on mobile
+- Use reusable chart card components
+- Include loading skeletons and empty states
+
+Technical requirements:
+- Use React
+- Use a chart library like Recharts
+- Build as reusable components
+- Export a single polished dashboard section ready to drop into a larger app

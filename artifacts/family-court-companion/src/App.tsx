@@ -28,6 +28,7 @@ import GapDetector from "@/pages/analyze/GapDetector";
 import CourtSimulator from "@/pages/analyze/CourtSimulator";
 import PatternDetector from "@/pages/analyze/PatternDetector";
 import CommunicationStats from "@/pages/analyze/CommunicationStats";
+import CaseIntelligence from "@/pages/analyze/CaseIntelligence";
 
 import DocumentsHub from "@/pages/documents/DocumentsHub";
 import NarrativeGenerator from "@/pages/documents/NarrativeGenerator";
@@ -62,6 +63,7 @@ function Router() {
         <Route path="/evidence/results" component={AnalysisResults} />
         <Route path="/evidence/library" component={EvidenceLibrary} />
 
+        <Route path="/analyze/intelligence" component={CaseIntelligence} />
         <Route path="/analyze/scanner" component={CommunicationScanner} />
         <Route path="/analyze/gaps" component={GapDetector} />
         <Route path="/analyze/simulator" component={CourtSimulator} />

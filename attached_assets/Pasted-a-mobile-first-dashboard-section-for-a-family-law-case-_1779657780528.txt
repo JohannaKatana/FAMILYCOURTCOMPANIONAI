@@ -1,0 +1,105 @@
+a mobile-first dashboard section for a family law case analysis app inspired by modern financial analytics cards.
+
+Design style:
+- dark olive / muted green premium dashboard aesthetic
+- rounded cards
+- soft borders
+- subtle shadows
+- compact infographic layout
+- modern data-visualization look
+- mobile-first but responsive for tablet and desktop
+- clean typography
+- premium, serious, trustworthy legal-tech feel
+- not playful, not generic SaaS
+
+Build a “Case Intelligence Dashboard” section with a card grid similar to a finance app analytics layout.
+
+Include these cards:
+
+1. Main trend card (large left card)
+Title: Case Activity Over Time
+Chart: dual-line chart
+Series 1: total evidence entries this month
+Series 2: previous month
+Purpose: show escalation and pattern growth over time
+
+2. KPI card
+Title: Evidence Strength
+Metrics:
+- Total entries
+- Strong entries
+- Witness-backed entries
+- Timestamped entries
+
+3. KPI card
+Title: Case Readiness
+Metrics:
+- Factors covered
+- Weak factors
+- Missing factors
+- Packet completion %
+
+4. Secondary chart card
+Title: Communication & Compliance Trends
+Chart: combo chart with vertical bars + line
+Bars: number of incidents by week or month
+Line: average response delay or cooperation score
+
+5. Activity feed card
+Title: Recent Evidence
+List recent evidence items with:
+- category
+- short description
+- date
+- severity badge
+
+6. Horizontal bar chart card
+Title: Top Issue Categories
+Show ranked categories such as:
+- Scheduling
+- Communication
+- Co-Parenting
+- Medical / Safety
+- Children’s Preferences
+- Education
+
+7. Circular progress card
+Title: Factor Coverage
+Metrics:
+- Covered
+- Weak
+- Missing
+
+8. Circular progress card
+Title: Parenting Time Compliance
+Metrics:
+- completed exchanges
+- late exchanges
+- cancelled exchanges
+
+9. Optional pattern chart
+Title: High-Conflict Patterns
+Chart: stacked bars or ranked bars
+Patterns:
+- interference with parenting
+- unilateral decisions
+- non-responsiveness
+- manipulation
+- threats
+- escalation
+
+Use realistic demo data for a custody case.
+
+UX requirements:
+- Each card should feel like an infographic
+- Add tiny legends, muted labels, and clear hierarchy
+- Cards should be scannable on a phone
+- Show hover states on web and tap-friendly states on mobile
+- Use reusable chart card components
+- Include loading skeletons and empty states
+
+Technical requirements:
+- Use React
+- Use a chart library like Recharts
+- Build as reusable components
+- Export a single polished dashboard section ready to drop into a larger app
