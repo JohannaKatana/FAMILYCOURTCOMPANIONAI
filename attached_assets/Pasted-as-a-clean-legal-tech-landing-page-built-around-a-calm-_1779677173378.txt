@@ -1,0 +1,60 @@
+as a clean legal-tech landing page built around a calm blue/neutral palette, rounded SaaS components, and a modern sans-serif system optimized for trust and clarity rather than brand expressiveness. The page structure, content hierarchy, and CTA pattern all point to a conventional conversion-focused startup UI: top nav, hero, feature grid, process steps, pricing, FAQ, and closing CTA.
+
+Color system
+The live page content shows a trust-oriented legal/product positioning, and that usually aligns with a restrained palette: white or near-white backgrounds, dark charcoal text, muted grays for secondary content, and a single blue accent for links and primary buttons. The repeated presence of navigation links and multiple “Get Started” CTAs suggests a primary accent color is used consistently to direct attention rather than a multi-color brand system.
+
+A likely reconstructed palette is:
+
+Background: white or off-white, around #FFFFFF to #F8FAFC
+
+Primary text: dark slate/charcoal, around #0F172A to #1E293B
+
+Secondary text: muted gray, around #475569 to #64748B
+
+Borders/cards: very light gray, around #E2E8F0
+
+Primary accent/CTA: medium trust-blue, around #2563EB to #3B82F6
+
+Typography
+The site reads like a startup landing page using a modern sans-serif for both headings and body text, likely something in the Inter/Manrope/Plus Jakarta Sans/Satoshi family rather than serif or display typography. The headings are short, direct, and product-like, which fits a UI system using bold weights for hierarchy and regular to medium weights for paragraphs and navigation.
+
+Most likely font behavior:
+
+Headings: sans-serif, semibold to bold, tight line-height
+
+Body: sans-serif, regular weight, highly readable
+
+Buttons/nav: medium or semibold
+
+No decorative or legal-traditional serif usage, which signals “product SaaS” more than “law firm” branding
+
+UI pattern
+The page architecture is a classic SaaS landing flow with strong conversion logic: header navigation, hero with dual CTA, three-feature explanation block, three-step workflow, pricing cards, FAQ accordion area, then a final CTA and footer. That structure is designed to reduce uncertainty for self-represented family-court users by moving from promise, to capability, to process, to price, to reassurance.
+
+The inferred component style is:
+
+Rounded buttons and cards
+
+Generous whitespace
+
+Left-aligned body copy with centered section framing
+
+Minimal illustration reliance, with text doing most of the trust-building
+
+Likely soft shadows or subtle borders instead of heavy visual decoration
+
+Reverse-engineered design spec
+Here is the closest practical UI spec for recreating the design:
+
+Layer	Likely implementation
+Layer	Likely implementation
+Brand feel	Calm, credible, non-intimidating legal-tech SaaS for pro se users 
+Layout	Max-width centered container, roughly 1100–1200px, stacked marketing sections 
+Grid	2-column hero, 3-column features, 2-card pricing, single-column FAQ 
+Buttons	Rounded medium radius, solid primary button plus lighter secondary button 
+Cards	White background, 1px light border, subtle shadow, 16–24px padding
+Typography	Inter-style sans; H1 bold, H2 semibold, body regular 
+Color use	One main blue accent, grayscale support colors, lots of white space 
+UX style	Simple, reassuring, low-cognitive-load onboarding language 
+What to copy
+If you want to reproduce the same UI style, use this formula: choose a neutral white/light-gray canvas, pair it with a single trustworthy blue accent, use a clean sans-serif like Inter, keep sections modular, and make every block answer one user question at a time—what it is, how it works, how much it costs, and whether it is safe to trust. That matches the page’s observable product messaging and information architecture very closely.

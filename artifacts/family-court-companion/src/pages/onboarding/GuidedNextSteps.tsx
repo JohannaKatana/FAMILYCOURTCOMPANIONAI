@@ -70,7 +70,7 @@ export default function GuidedNextSteps() {
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
           <h1 className="text-2xl font-bold mb-1">Welcome, Maria!</h1>
-          <p className="text-muted-foreground text-sm mb-8">Here's how to use Family Court Companion AI. Work through these steps in order for best results.</p>
+          <p className="text-muted-foreground text-sm mb-8">Here's how to use CaseClear. Work through these steps in order for best results.</p>
         </motion.div>
 
         <div className="space-y-3 mb-8">

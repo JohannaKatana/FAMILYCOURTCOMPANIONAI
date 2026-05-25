@@ -19,7 +19,7 @@ export default function SignUp() {
         <Link href="/">
           <div className="flex items-center gap-2 cursor-pointer">
             <ShieldCheck className="h-5 w-5 text-primary" />
-            <span className="font-semibold text-sm">Family Court AI</span>
+            <span className="font-semibold text-sm">CaseClear</span>
           </div>
         </Link>
       </header>

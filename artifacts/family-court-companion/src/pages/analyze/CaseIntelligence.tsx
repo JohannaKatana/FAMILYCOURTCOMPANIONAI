@@ -85,11 +85,11 @@ const factorCoverage = [
 // ─── Colors ──────────────────────────────────────────────────────────────────
 
 const C = {
-  teal: "#2d8a8a",
-  tealMid: "#3da0a0",
+  teal: "#2563eb",
+  tealMid: "#3b82f6",
   amber: "#d97706",
   violet: "#7c3aed",
-  blue: "#2563eb",
+  blue: "#0ea5e9",
   red: "#dc2626",
   emerald: "#059669",
   slate: "#64748b",

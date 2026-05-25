@@ -27,7 +27,7 @@ The Respondent's communications contained language characterized as hostile or a
 
 The Petitioner's cooperation score, as measured by response compliance and scheduling flexibility, is 68 out of 100. The Respondent's cooperation score is 32 out of 100.
 
-This summary was generated from communications uploaded to Family Court Companion AI and is provided for informational purposes only. This document should be reviewed and verified by a licensed attorney before being submitted in any legal proceeding.`;
+This summary was generated from communications uploaded to CaseClear and is provided for informational purposes only. This document should be reviewed and verified by a licensed attorney before being submitted in any legal proceeding.`;
 
 export default function CommunicationStats() {
   const [generating, setGenerating] = useState(false);

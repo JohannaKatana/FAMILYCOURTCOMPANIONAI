@@ -60,52 +60,52 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* LIGHT MODE */
+/* LIGHT MODE — CaseClear trust-blue palette */
 :root {
-  --background: 38 20% 97%;
-  --foreground: 220 20% 16%;
-  --border: 220 13% 88%;
+  --background: 210 20% 98%;
+  --foreground: 222 47% 11%;
+  --border: 214 32% 91%;
   
   --card: 0 0% 100%;
-  --card-foreground: 220 20% 16%;
-  --card-border: 220 13% 88%;
+  --card-foreground: 222 47% 11%;
+  --card-border: 214 32% 91%;
   
-  --sidebar: 220 20% 12%;
-  --sidebar-foreground: 220 13% 85%;
-  --sidebar-border: 220 20% 20%;
-  --sidebar-primary: 180 45% 45%;
+  --sidebar: 222 40% 10%;
+  --sidebar-foreground: 214 20% 82%;
+  --sidebar-border: 222 30% 18%;
+  --sidebar-primary: 221 83% 63%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 220 20% 18%;
-  --sidebar-accent-foreground: 220 13% 90%;
-  --sidebar-ring: 180 45% 45%;
+  --sidebar-accent: 222 35% 16%;
+  --sidebar-accent-foreground: 214 20% 88%;
+  --sidebar-ring: 221 83% 63%;
   
   --popover: 0 0% 100%;
-  --popover-foreground: 220 20% 16%;
-  --popover-border: 220 13% 88%;
+  --popover-foreground: 222 47% 11%;
+  --popover-border: 214 32% 91%;
   
-  --primary: 180 45% 30%;
+  --primary: 221 83% 53%;
   --primary-foreground: 0 0% 100%;
   
-  --secondary: 220 13% 93%;
-  --secondary-foreground: 220 20% 30%;
+  --secondary: 214 32% 95%;
+  --secondary-foreground: 215 16% 35%;
   
-  --muted: 220 13% 95%;
-  --muted-foreground: 220 10% 50%;
+  --muted: 214 32% 96%;
+  --muted-foreground: 215 16% 47%;
   
-  --accent: 180 35% 90%;
-  --accent-foreground: 180 45% 20%;
+  --accent: 221 83% 94%;
+  --accent-foreground: 221 83% 28%;
   
   --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 100%;
   
-  --input: 220 13% 88%;
-  --ring: 180 45% 30%;
+  --input: 214 32% 91%;
+  --ring: 221 83% 53%;
   
-  --chart-1: 180 45% 30%;
-  --chart-2: 180 30% 45%;
-  --chart-3: 180 20% 60%;
-  --chart-4: 180 10% 75%;
-  --chart-5: 180 5% 85%;
+  --chart-1: 221 83% 53%;
+  --chart-2: 217 91% 65%;
+  --chart-3: 210 80% 72%;
+  --chart-4: 205 70% 79%;
+  --chart-5: 200 55% 86%;
 
   --app-font-sans: 'Inter', sans-serif;
   --app-font-serif: Georgia, serif;
@@ -114,50 +114,50 @@
 }
 
 .dark {
-  --background: 222 20% 10%;
-  --foreground: 210 20% 92%;
+  --background: 222 28% 9%;
+  --foreground: 210 20% 93%;
   --border: 220 20% 22%;
   
-  --card: 222 20% 14%;
-  --card-foreground: 210 20% 92%;
+  --card: 222 25% 13%;
+  --card-foreground: 210 20% 93%;
   --card-border: 220 20% 22%;
   
-  --sidebar: 222 25% 7%;
-  --sidebar-foreground: 210 15% 80%;
-  --sidebar-border: 220 20% 15%;
-  --sidebar-primary: 180 45% 45%;
+  --sidebar: 222 35% 7%;
+  --sidebar-foreground: 214 15% 78%;
+  --sidebar-border: 220 25% 14%;
+  --sidebar-primary: 221 83% 63%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 222 20% 12%;
-  --sidebar-accent-foreground: 210 15% 80%;
-  --sidebar-ring: 180 45% 45%;
+  --sidebar-accent: 222 28% 12%;
+  --sidebar-accent-foreground: 214 15% 82%;
+  --sidebar-ring: 221 83% 63%;
   
-  --popover: 222 20% 14%;
-  --popover-foreground: 210 20% 92%;
+  --popover: 222 25% 13%;
+  --popover-foreground: 210 20% 93%;
   --popover-border: 220 20% 22%;
   
-  --primary: 180 45% 45%;
+  --primary: 221 83% 63%;
   --primary-foreground: 0 0% 100%;
   
-  --secondary: 222 15% 20%;
+  --secondary: 222 20% 20%;
   --secondary-foreground: 210 15% 80%;
   
-  --muted: 222 15% 17%;
+  --muted: 222 20% 16%;
   --muted-foreground: 220 10% 55%;
   
-  --accent: 180 35% 18%;
-  --accent-foreground: 180 35% 85%;
+  --accent: 221 60% 18%;
+  --accent-foreground: 221 80% 85%;
   
   --destructive: 0 65% 55%;
   --destructive-foreground: 0 0% 100%;
   
   --input: 220 20% 25%;
-  --ring: 180 45% 45%;
+  --ring: 221 83% 63%;
   
-  --chart-1: 180 45% 45%;
-  --chart-2: 180 35% 55%;
-  --chart-3: 180 25% 65%;
-  --chart-4: 180 15% 75%;
-  --chart-5: 180 10% 85%;
+  --chart-1: 221 83% 63%;
+  --chart-2: 217 80% 70%;
+  --chart-3: 210 70% 76%;
+  --chart-4: 205 60% 82%;
+  --chart-5: 200 50% 88%;
 }
 
 @layer base {

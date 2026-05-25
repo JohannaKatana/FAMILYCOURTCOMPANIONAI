@@ -60,7 +60,7 @@ export function Sidebar({ className }: { className?: string }) {
   return (
     <aside className={`w-56 flex-col bg-sidebar border-r border-sidebar-border text-sidebar-foreground ${className}`}>
       <div className="h-14 flex items-center px-5 border-b border-sidebar-border shrink-0">
-        <span className="font-bold text-base text-sidebar-primary-foreground tracking-tight">Family Court AI</span>
+        <span className="font-bold text-base text-sidebar-primary-foreground tracking-tight">CaseClear</span>
       </div>
 
       <nav className="flex-1 overflow-y-auto py-3">
