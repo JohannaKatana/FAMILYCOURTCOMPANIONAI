@@ -6,6 +6,7 @@ import {
 import { motion } from "framer-motion";
 import { BarChart2, Sparkles, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { mockEvidenceEntries, mockCustodyFactors } from "@/data/mockData";
+import { CaseReadinessMeter } from "@/components/app/CaseReadinessMeter";
 
 // ─── Chart Data ─────────────────────────────────────────────────────────────
 
@@ -224,6 +225,9 @@ export default function CaseIntelligence() {
         <KpiCard label="Readiness Score" value="81/100" sub="Pin 1 more entry for Strong" trend="down" color="text-primary" />
       </div>
 
+      {/* Case Readiness Meter */}
+      <CaseReadinessMeter entries={mockEvidenceEntries} />
+
       {/* Main area chart + Source donut */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <ChartCard className="md:col-span-2" title="Case Activity Over Time" subtitle="Evidence entries and documented incidents by month">
@@ -254,40 +258,23 @@ export default function CaseIntelligence() {
         </ChartCard>
       </div>
 
-      {/* Stacked bar + Response delay */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <ChartCard title="Incidents by Category" subtitle="Monthly breakdown Jan–May 2026">
-          <ResponsiveContainer width="100%" height={188}>
-            <BarChart data={categoryByMonth} margin={{ top: 4, right: 8, left: -18, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" strokeOpacity={0.5} />
-              <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-              <Tooltip content={<ChartTip />} />
-              <Bar dataKey="Scheduling" stackId="a" fill={C.teal} />
-              <Bar dataKey="Communication" stackId="a" fill={C.amber} />
-              <Bar dataKey="Co-Parenting" stackId="a" fill={C.violet} />
-              <Bar dataKey="Financial" stackId="a" fill={C.blue} />
-              <Bar dataKey="Safety" stackId="a" fill={C.red} radius={[3, 3, 0, 0]} />
-              <Legend iconType="square" iconSize={8} wrapperStyle={{ fontSize: 10, paddingTop: 6 }} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <ChartCard title="Response Delay Trend" subtitle="Avg hours to respond + ignored requests">
-          <ResponsiveContainer width="100%" height={188}>
-            <ComposedChart data={responseDelayTrend} margin={{ top: 4, right: 8, left: -18, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" strokeOpacity={0.5} />
-              <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-              <YAxis yAxisId="left" tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-              <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-              <Tooltip content={<ChartTip />} />
-              <Bar yAxisId="left" dataKey="Ignored" fill={C.red} fillOpacity={0.75} radius={[3, 3, 0, 0]} />
-              <Line yAxisId="right" type="monotone" dataKey="Avg Delay (hrs)" stroke={C.amber} strokeWidth={2.5} dot={{ r: 3, fill: C.amber, strokeWidth: 0 }} activeDot={{ r: 5 }} />
-              <Legend iconType="square" iconSize={8} wrapperStyle={{ fontSize: 10, paddingTop: 6 }} />
-            </ComposedChart>
-          </ResponsiveContainer>
-        </ChartCard>
-      </div>
+      {/* Stacked bar — full width */}
+      <ChartCard title="Incidents by Category" subtitle="Monthly breakdown Jan–May 2026">
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart data={categoryByMonth} margin={{ top: 4, right: 12, left: -18, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" strokeOpacity={0.5} />
+            <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
+            <Tooltip content={<ChartTip />} />
+            <Bar dataKey="Scheduling" stackId="a" fill={C.teal} />
+            <Bar dataKey="Communication" stackId="a" fill={C.amber} />
+            <Bar dataKey="Co-Parenting" stackId="a" fill={C.violet} />
+            <Bar dataKey="Financial" stackId="a" fill={C.blue} />
+            <Bar dataKey="Safety" stackId="a" fill={C.red} radius={[3, 3, 0, 0]} />
+            <Legend iconType="square" iconSize={8} wrapperStyle={{ fontSize: 10, paddingTop: 6 }} />
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartCard>
 
       {/* Pattern frequency + Factor coverage */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

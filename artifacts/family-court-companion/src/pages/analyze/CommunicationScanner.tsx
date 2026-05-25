@@ -11,6 +11,20 @@ import { UploadCard } from "@/components/app/UploadCard";
 import { Lock, Zap, Search, History, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
+import {
+  ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid,
+  Tooltip, Legend, ResponsiveContainer
+} from "recharts";
+
+const responseDelayTrend = [
+  { month: "Nov", "Avg Delay (hrs)": 2.1, Ignored: 0 },
+  { month: "Dec", "Avg Delay (hrs)": 3.4, Ignored: 1 },
+  { month: "Jan", "Avg Delay (hrs)": 5.2, Ignored: 2 },
+  { month: "Feb", "Avg Delay (hrs)": 7.8, Ignored: 2 },
+  { month: "Mar", "Avg Delay (hrs)": 9.1, Ignored: 4 },
+  { month: "Apr", "Avg Delay (hrs)": 11.2, Ignored: 3 },
+  { month: "May", "Avg Delay (hrs)": 8.7, Ignored: 2 },
+];
 
 const SEARCH_CHIPS = ["abuse", "late", "money", "interference", "safety", "non-cooperation", "schedule", "threats"];
 
@@ -222,6 +236,33 @@ export default function CommunicationScanner() {
           </div>
         </motion.div>
       )}
+
+      {/* Response Delay Trend */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Response Delay Trend</CardTitle>
+            <p className="text-xs text-muted-foreground">Avg hours to respond + ignored requests · Nov 2025–May 2026</p>
+          </CardHeader>
+          <CardContent className="px-2 pb-3">
+            <ResponsiveContainer width="100%" height={200}>
+              <ComposedChart data={responseDelayTrend} margin={{ top: 4, right: 8, left: -18, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" strokeOpacity={0.5} />
+                <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
+                <YAxis yAxisId="left" tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
+                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  contentStyle={{ fontSize: 11, borderRadius: 8, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }}
+                  labelStyle={{ fontWeight: 600, marginBottom: 4 }}
+                />
+                <Bar yAxisId="left" dataKey="Ignored" fill="#dc2626" fillOpacity={0.75} radius={[3, 3, 0, 0]} />
+                <Line yAxisId="right" type="monotone" dataKey="Avg Delay (hrs)" stroke="#d97706" strokeWidth={2.5} dot={{ r: 3, fill: "#d97706", strokeWidth: 0 }} activeDot={{ r: 5 }} />
+                <Legend iconType="square" iconSize={8} wrapperStyle={{ fontSize: 10, paddingTop: 6 }} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   );
 }
