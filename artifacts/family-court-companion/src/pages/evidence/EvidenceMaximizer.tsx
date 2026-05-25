@@ -29,7 +29,7 @@ export default function EvidenceMaximizer() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-xl font-bold">Evidence Maximizer</h1>
+        <h1 className="text-xl font-bold">Evidence Analyzer</h1>
         <p className="text-sm text-muted-foreground mt-1">Upload anything — AI finds what judges care about</p>
       </motion.div>
 
