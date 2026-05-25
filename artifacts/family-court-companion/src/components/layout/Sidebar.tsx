@@ -20,9 +20,9 @@ const navItems: NavItem[] = [
   ]},
   { name: "Analyze", href: "/analyze/intelligence", icon: Activity, children: [
     { name: "Case Intelligence", href: "/analyze/intelligence", icon: Sparkles },
-    { name: "Comm Scanner", href: "/analyze/scanner", icon: Search },
-    { name: "Gap Detector", href: "/analyze/gaps", icon: GitBranch },
-    { name: "Court Simulator", href: "/analyze/simulator", icon: Scale },
+    { name: "Comm Analysis", href: "/analyze/scanner", icon: Search },
+    { name: "Custody Factor Review", href: "/analyze/gaps", icon: GitBranch },
+    { name: "Hearing Prep", href: "/analyze/simulator", icon: Scale },
     { name: "Pattern Detector", href: "/analyze/patterns", icon: ScanLine },
     { name: "Comm Statistics", href: "/analyze/stats", icon: BarChart2 },
   ]},

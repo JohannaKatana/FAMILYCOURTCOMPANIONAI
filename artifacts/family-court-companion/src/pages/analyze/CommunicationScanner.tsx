@@ -85,7 +85,7 @@ export default function CommunicationScanner() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-xl font-bold">Communication Scanner</h1>
+        <h1 className="text-xl font-bold">Comm Analysis</h1>
         <p className="text-sm text-muted-foreground mt-1">Import text threads. AI finds every evidentiary message.</p>
       </motion.div>
 

@@ -93,7 +93,7 @@ export default function CourtSimulator() {
     return (
       <div className="max-w-2xl mx-auto space-y-6">
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-xl font-bold">Court Simulator</h1>
+          <h1 className="text-xl font-bold">Hearing Prep</h1>
           <p className="text-sm text-muted-foreground mt-1">Prepare for court questions based on your evidence.</p>
         </motion.div>
 
