@@ -42,6 +42,7 @@ import CaseSettings from "@/pages/settings/CaseSettings";
 import PeopleManager from "@/pages/settings/PeopleManager";
 import Subscription from "@/pages/settings/Subscription";
 import HelpAndDisclaimer from "@/pages/settings/HelpAndDisclaimer";
+import DataPrivacy from "@/pages/settings/DataPrivacy";
 
 function Router() {
   return (
@@ -82,6 +83,7 @@ function Router() {
         <Route path="/settings/people" component={PeopleManager} />
         <Route path="/settings/subscription" component={Subscription} />
         <Route path="/settings/help" component={HelpAndDisclaimer} />
+        <Route path="/settings/privacy" component={DataPrivacy} />
 
         <Route component={NotFound} />
       </Switch>
