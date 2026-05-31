@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "okUmbdZfNpAu0a-HHBUvf"
+uri = "file://caseclear-logo.svg"
+type = "image"
+title = "CaseClear Shield Logo (SVG)"

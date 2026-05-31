@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="100" fill="#2563EB"/>
+  <!-- Shield shape -->
+  <path d="M100 30 L148 52 L148 100 C148 128 126 152 100 162 C74 152 52 128 52 100 L52 52 Z"
+        fill="white" fill-opacity="0.15" stroke="white" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Checkmark -->
+  <polyline points="76,102 92,118 126,84"
+            fill="none" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
