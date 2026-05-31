@@ -1,0 +1,402 @@
+Prompt for Replit: Co‑Parent Communication Scanner
+You are building a Python tool that analyzes exported co‑parenting communication logs (Talking Parents, OurFamilyWizard, SMS exports, etc.).
+
+The tool will take as input one or more text or PDF exports of message threads between two parents (label them “Mother” and “Father”), where each record contains at least:
+
+Sender name
+
+Timestamp (date + time)
+
+Message text
+
+Optional: “viewed” or “read” events with timestamps
+
+The tool must parse the raw export into a structured dataset and then compute a series of response‑pattern metrics and category statistics. The design goal is that this can be used to generate court‑ready reports about responsiveness and non‑responsiveness across different topics (schedule, school, medical, etc.).
+
+1. Core parsing requirements
+Normalize each communication event into a row with fields:
+
+id (unique event id)
+
+page_number (page in source PDF or export where the message appears, if available)
+
+timestamp (ISO format)
+
+date (YYYY‑MM‑DD)
+
+hour (0–23)
+
+sender (exact name string, but also normalized role: Mother or Father)
+
+message_type:
+
+"text" for an actual message body
+
+"view" for a view/read‑receipt event with no message body
+
+text (raw message content, empty for view events)
+
+Identify which parent is “Mother” and which is “Father” via configurable mapping (e.g. a small YAML/JSON or function where the user can set mother_name, father_name).
+
+Preserve and propagate page_number for each event based on the original export so every later metric can be traced back to a specific page.
+
+2. Message grouping (“conversation groups”)
+Create “conversation groups” separately for each direction:
+
+For Mother → Father groups:
+
+Sort events chronologically.
+
+Whenever you have consecutive "text" messages from Mother on the same calendar date and within the same clock hour, group them as a single “Mother group message”.
+
+A new group starts when:
+
+Sender changes, or
+
+Date changes, or
+
+Hour changes.
+
+For Father → Mother groups:
+
+Use the same logic (consecutive "text" messages from Father, same date and hour = one Father group).
+
+For each group, compute and store:
+
+group_id (separate counters for Mother→Father and Father→Mother)
+
+direction ("mother_to_father" or "father_to_mother")
+
+start_timestamp and end_timestamp
+
+start_page_number and end_page_number
+
+message_count (number of individual texts in this group)
+
+full_text (concatenation of texts, useful for topic classification)
+
+3. Response‑linking logic
+You need to detect responses from one parent to the other, both at the individual message level and at the group level.
+
+3.1 Individual message response tracking
+For each Mother text message:
+
+Find the earliest Father event that occurs after this message’s timestamp.
+
+Allowed Father events:
+
+Father "text" message → count as a text response.
+
+Father "view" event → count as view only (only if no text response occurs before the next Mother message or a configurable cut‑off).
+
+For each Mother message, compute:
+
+response_type_from_father:
+
+"text_response"
+
+"acknowledgment_only" (see below)
+
+"view_only_no_text"
+
+"no_response"
+
+response_timestamp_from_father (if any)
+
+response_time_hours_from_father (time delta in hours)
+
+Treat “view only” as not a proper response in the metrics, but keep it as a distinct category.
+
+Acknowledgment‑only detection: if Father’s text is essentially a receipt acknowledgment with no substantive content (e.g. variants of “I am acknowledging receipt of this/these messages”), then:
+
+response_type_from_father = "acknowledgment_only"
+
+Also tag is_substantive = False.
+
+For each Father text message, mirror the same logic to detect Mother’s responses:
+
+response_type_from_mother
+
+response_timestamp_from_mother
+
+response_time_hours_from_mother
+
+Acknowledgment‑only detection for Mother as well (even if, in the sample data, Mother never uses it).
+
+3.2 Group‑level response tracking
+For each Mother→Father group:
+
+Find the first Father event (text or view) that occurs after start_timestamp of that group and before the next Mother→Father group.
+
+Compute:
+
+group_response_type_from_father:
+
+"text_response" (with a substantive text)
+
+"acknowledgment_only"
+
+"view_only_no_text"
+
+"no_response"
+
+group_response_time_hours_from_father (first responding event)
+
+For Father→Mother groups, do the same for Mother’s responses.
+
+4. Topic detection and categorization
+For each Mother→Father group, classify the group into one or more co‑parenting categories based on keyword/phrase matching in full_text and possibly simple NLP:
+
+At minimum support these categories (multiple allowed per group):
+
+schedule_coordination (exchanges, pickups, drop‑offs, timing)
+
+school_education (school, teacher, homework, grades, IEP, conferences)
+
+child_medical_health (doctor, therapist, medication, symptoms, appointments)
+
+visitation (requests to see the child, missed visits, make‑up time)
+
+overnight_visits
+
+holiday_special_events (holidays, birthdays, special occasions)
+
+child_welfare_activities (activities, safety concerns, emotional/behavioral welfare)
+
+financial (support, reimbursements, expenses, payment)
+
+communication_boundaries (tone, boundaries, rules about communication)
+
+Design the classifier so that:
+
+Each group always has at least one category.
+
+It is easy to adjust keyword lists per category.
+
+Record the category fields on each group row, e.g. Boolean flags or a list.
+
+5. Metrics to compute
+Using the parsed data and grouped conversations, compute two sets of metrics:
+(1) parent‑directional response patterns, and
+(2) category‑specific non‑response patterns.
+
+5.1 Parent‑directional response metrics
+Compute these metrics separately for:
+
+Mother’s responses to Father (both individual and grouped)
+
+Father’s responses to Mother (both individual and grouped)
+
+For individual messages in a given direction (e.g. Mother’s responses to 177 Father messages):
+
+total_messages_from_sender
+
+total_text_responses_from_other_parent
+
+total_no_text_response_from_other_parent
+
+total_view_only_no_text
+
+total_acknowledgment_only
+
+total_no_response_at_all (not viewed, no message)
+
+Percentages for each:
+
+text_response_percent = total_text_responses / total_messages_from_sender * 100
+
+no_text_response_percent
+
+view_only_percent
+
+acknowledgment_only_percent
+
+no_response_at_all_percent
+
+Response time statistics (for text responses only):
+
+average_response_time_hours
+
+min_response_time_hours
+
+max_response_time_hours
+
+Counts and percentages:
+
+responses_within_24h
+
+responses_over_24h
+
+responses_over_48h
+
+For grouped conversations in a given direction (e.g. Mother’s responses to 159 Father groups):
+
+total_message_groups_from_sender
+
+group_text_responses_from_other_parent
+
+group_view_only_no_text
+
+group_acknowledgment_only
+
+group_no_response
+
+Percentages:
+
+group_text_response_percent
+
+group_view_only_percent
+
+group_acknowledgment_only_percent
+
+group_no_response_percent
+
+Group response time statistics as above.
+
+The tool should be able to reproduce statistics like:
+
+Mother responds to 88.1% of Father’s individual messages vs Father responding to 21.5% of Mother’s messages.
+
+Mother responds to 98.1% of Father’s message groups vs Father responding to 38.0% of Mother’s groups.
+
+Father’s “view only” rate vs Mother’s (e.g. Father ~53% view‑only vs Mother 0%).
+
+5.2 Category‑specific non‑response metrics (for Mother’s requests)
+Focus on Mother→Father groups, especially those that contain a “request” (you can approximate requests via question marks, “please”, “can you”, “I need you to”, etc.).
+
+For each category (e.g. schedule_coordination, school_education, child_medical_health, visitation, holiday_special_events, overnight_visits, child_welfare_activities, financial, communication_boundaries):
+
+total_mother_groups_in_category
+
+total_non_substantive_outcomes in that category:
+
+Count of groups where Father’s group response type is:
+
+"view_only_no_text"
+
+"acknowledgment_only"
+
+"no_response"
+
+total_substantive_responses in that category:
+
+Groups where Father’s group response type is "text_response" and is_substantive = True.
+
+Then calculate:
+
+%_of_all_non_substantive_responses:
+
+For example: “schedule_coordination groups account for 11.7% of all non‑substantive responses.”
+
+%_of_all_mother_messages:
+
+Category share out of all Mother groups.
+
+Within each category:
+
+%_completely_ignored (no view, no text)
+
+%_viewed_but_ignored (view‑only, no text)
+
+%_acknowledgment_only
+
+%_with_substantive_response
+
+These should support outputs like:
+
+“Schedule/Coordination: 67 non‑substantive responses, 11.7% of all non‑responses, 9.2% of all messages.”
+
+“Child Medical/Health: 60% viewed but no response.”
+
+“Child Welfare/Activities: 100% completely ignored.”
+
+6. Output formats
+The tool should generate:
+
+Machine‑readable CSVs:
+
+all_events.csv – one row per event (message or view).
+
+message_groups.csv – one row per group with category flags and response classification.
+
+directional_metrics.csv – high‑level stats for Mother→Father and Father→Mother, individual and grouped.
+
+category_nonresponse_metrics.csv – category‑level breakdowns as described above.
+
+Human‑readable text/Markdown summaries suitable for court exhibits, including:
+
+“Key statistics” section (total messages per parent, ratios, response rates, etc.).
+
+“Mother’s response pattern” and “Father’s response pattern” sections summarizing:
+
+Substantive text responses
+
+Acknowledgment‑only responses
+
+View‑only events
+
+No response at all
+
+24‑hour and 48‑hour compliance
+
+Average/min/max response times
+
+“Category breakdown” section listing for each category:
+
+Count and % of Mother’s messages.
+
+Count and % of non‑substantive responses from Father.
+
+Whether they tend to be viewed but ignored vs completely ignored.
+
+All summaries must reference the page numbers from the original export so each example or group can be found quickly in the PDF.
+
+7. Extensibility & configuration
+Make thresholds configurable:
+
+24‑hour and 48‑hour “late response” thresholds.
+
+Time window for grouping messages (default: same date + same hour).
+
+Allow the user to toggle:
+
+Whether view‑only counts as “any response” vs “no substantive response.”
+
+Keyword lists for categories and “acknowledgment‑only” detection.
+
+Write the code so it can later handle other platforms (OurFamilyWizard, SMS exports) as long as messages can be normalized to the core schema.
+
+What patterns this scanner should identify
+The prompt above tells Replit to detect, in a structured, repeatable way:
+
+Response vs non‑response patterns:
+
+Text response, acknowledgment‑only, view‑only, no response at all.
+
+Response timeliness:
+
+Within 24 hours, over 24 hours, over 48 hours, average/min/max response time.
+
+Directional imbalance:
+
+How often Mother responds to Father vs Father responds to Mother, for both individual messages and grouped “conversations.”
+
+Passive non‑engagement:
+
+How often a parent views messages but fails to respond with any text, per parent and per category.
+
+Topic‑level neglect:
+
+Which categories of Mother’s requests (schedule, school, child medical/health, visitation, holidays, overnights, welfare/activities, financial, communication/boundaries) are most likely to receive:
+
+No response
+
+View‑only
+
+Acknowledgment‑only
+
+Substantive text response
+
+Percent of all non‑responses and percent of total messages by category.
+
+Those are exactly the behavioral patterns you and Claude surfaced: extreme asymmetry in response rates, high “view only” behavior on one side, and systematic non‑response in certain categories like scheduling, school, and child medical/health.
