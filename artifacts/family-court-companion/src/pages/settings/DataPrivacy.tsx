@@ -30,7 +30,7 @@ const SECURITY_LAYERS = [
   {
     icon: Key,
     title: "User-Scoped Data Isolation",
-    detail: "Every API request is validated against your authenticated user ID. No one else — including CaseClear staff — can access your case data.",
+    detail: "Every API request is validated against your authenticated user ID. No one else — including our staff — can access your case data.",
     badge: "Access Control",
     color: "text-emerald-600 dark:text-emerald-400",
     bg: "bg-emerald-50 dark:bg-emerald-950/30",
@@ -107,7 +107,7 @@ export default function DataPrivacy() {
         <CardContent className="p-4 flex gap-3">
           <Shield className="h-5 w-5 text-primary mt-0.5 shrink-0" />
           <div>
-            <p className="text-sm font-semibold text-primary mb-1">CaseClear Security Commitment</p>
+            <p className="text-sm font-semibold text-primary mb-1">Family Court Companion AI Security Commitment</p>
             <p className="text-xs text-muted-foreground leading-relaxed">
               All data is encrypted in transit (TLS 1.3) and at rest (AES-256). Your case files are stored in secure cloud storage with strict access controls. We never share your data with third parties or use it to train AI models.
             </p>
@@ -241,7 +241,7 @@ export default function DataPrivacy() {
       <Separator />
 
       <p className="text-xs text-muted-foreground text-center">
-        CaseClear · Version 1.0.0 · © 2026 · <a href="mailto:privacy@caseclear.ai" className="underline">privacy@caseclear.ai</a>
+        Family Court Companion AI · Version 1.0.0 · © 2026 · <a href="mailto:privacy@familycourtcompanion.ai" className="underline">privacy@familycourtcompanion.ai</a>
       </p>
     </div>
   );

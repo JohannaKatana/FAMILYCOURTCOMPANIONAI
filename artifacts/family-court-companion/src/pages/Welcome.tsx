@@ -12,9 +12,9 @@ export default function Welcome() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="w-24 h-24 bg-primary/10 rounded-2xl flex items-center justify-center mb-8 mx-auto"
+          className="mb-8 mx-auto"
         >
-          <ShieldCheck className="w-12 h-12 text-primary" />
+          <img src="/logo.png" alt="Family Court Companion AI" className="w-24 h-24 mx-auto" />
         </motion.div>
         
         <motion.h1 

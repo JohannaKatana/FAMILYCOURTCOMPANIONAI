@@ -22,7 +22,7 @@ export default function HomeDashboard() {
         <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6">
           <FileText className="w-10 h-10 text-muted-foreground" />
         </div>
-        <h2 className="text-2xl font-semibold mb-2">Welcome to CaseClear</h2>
+        <h2 className="text-2xl font-semibold mb-2">Welcome to Family Court Companion AI</h2>
         <p className="text-muted-foreground mb-8">Set up your case to start organizing evidence and preparing for court.</p>
         <Link href="/onboarding/state">
           <Button className="h-12 px-8">Setup Your Case</Button>

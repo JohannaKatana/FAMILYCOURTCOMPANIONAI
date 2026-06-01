@@ -60,30 +60,30 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* LIGHT MODE — CaseClear trust-blue palette */
+/* LIGHT MODE — Family Court Companion AI royal-blue palette */
 :root {
   --background: 210 20% 98%;
-  --foreground: 222 47% 11%;
-  --border: 214 32% 91%;
+  --foreground: 228 47% 11%;
+  --border: 220 32% 91%;
   
   --card: 0 0% 100%;
-  --card-foreground: 222 47% 11%;
-  --card-border: 214 32% 91%;
+  --card-foreground: 228 47% 11%;
+  --card-border: 220 32% 91%;
   
-  --sidebar: 222 40% 10%;
-  --sidebar-foreground: 214 20% 82%;
-  --sidebar-border: 222 30% 18%;
-  --sidebar-primary: 221 83% 63%;
+  --sidebar: 228 55% 10%;
+  --sidebar-foreground: 220 20% 82%;
+  --sidebar-border: 228 40% 18%;
+  --sidebar-primary: 228 68% 60%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 222 35% 16%;
-  --sidebar-accent-foreground: 214 20% 88%;
-  --sidebar-ring: 221 83% 63%;
+  --sidebar-accent: 228 45% 16%;
+  --sidebar-accent-foreground: 220 20% 88%;
+  --sidebar-ring: 228 68% 60%;
   
   --popover: 0 0% 100%;
-  --popover-foreground: 222 47% 11%;
-  --popover-border: 214 32% 91%;
+  --popover-foreground: 228 47% 11%;
+  --popover-border: 220 32% 91%;
   
-  --primary: 221 83% 53%;
+  --primary: 228 68% 47%;
   --primary-foreground: 0 0% 100%;
   
   --secondary: 214 32% 95%;
@@ -129,13 +129,13 @@
   --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-accent: 222 28% 12%;
   --sidebar-accent-foreground: 214 15% 82%;
-  --sidebar-ring: 221 83% 63%;
+  --sidebar-ring: 228 68% 60%;
   
-  --popover: 222 25% 13%;
+  --popover: 228 25% 13%;
   --popover-foreground: 210 20% 93%;
-  --popover-border: 220 20% 22%;
+  --popover-border: 228 20% 22%;
   
-  --primary: 221 83% 63%;
+  --primary: 228 68% 60%;
   --primary-foreground: 0 0% 100%;
   
   --secondary: 222 20% 20%;

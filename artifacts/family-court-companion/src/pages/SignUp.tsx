@@ -18,8 +18,8 @@ export default function SignUp() {
       <header className="h-14 flex items-center px-6 border-b border-border">
         <Link href="/">
           <div className="flex items-center gap-2 cursor-pointer">
-            <ShieldCheck className="h-5 w-5 text-primary" />
-            <span className="font-semibold text-sm">CaseClear</span>
+            <img src="/logo.png" alt="Family Court Companion AI" className="h-7 w-7 rounded" />
+            <span className="font-semibold text-sm">Family Court Companion AI</span>
           </div>
         </Link>
       </header>

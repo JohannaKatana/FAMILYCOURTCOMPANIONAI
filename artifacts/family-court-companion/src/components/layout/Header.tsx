@@ -74,7 +74,7 @@ export function Header() {
   return (
     <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4 md:px-8 shrink-0 relative z-40">
       <div className="flex items-center gap-2">
-        <h1 className="font-semibold md:hidden">CaseClear</h1>
+        <h1 className="font-semibold md:hidden">Family Court Companion AI</h1>
         {activeCase && (
           <Link href="/settings/case">
             <div className="hidden md:flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer">
