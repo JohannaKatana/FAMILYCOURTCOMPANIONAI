@@ -21,8 +21,8 @@ const SECURITY_LAYERS = [
   },
   {
     icon: Database,
-    title: "AES-256 Encryption at Rest",
-    detail: "Your case files, evidence entries, and communication data are stored in PostgreSQL with AES-256 encryption. The keys are managed by Replit's secure key management service.",
+    title: "AES-256-GCM Encryption at Rest",
+    detail: "Case data is encrypted with AES-256-GCM in the browser before being written to local storage. The encryption key lives only in your active session and is never stored on disk.",
     badge: "At Rest",
     color: "text-violet-600 dark:text-violet-400",
     bg: "bg-violet-50 dark:bg-violet-950/30",
@@ -30,7 +30,7 @@ const SECURITY_LAYERS = [
   {
     icon: Key,
     title: "User-Scoped Data Isolation",
-    detail: "Every API request is validated against your authenticated user ID. No one else — including our staff — can access your case data.",
+    detail: "Every API request is validated against your authenticated session token. No one else — including our staff — can access your case data.",
     badge: "Access Control",
     color: "text-emerald-600 dark:text-emerald-400",
     bg: "bg-emerald-50 dark:bg-emerald-950/30",
@@ -54,7 +54,7 @@ const SECURITY_LAYERS = [
   {
     icon: Server,
     title: "Rate Limiting & Request Security",
-    detail: "All API endpoints are protected by rate limiting (200 req / 15 min per IP), HTTP security headers (via Helmet), and input validation (Zod schemas) to prevent abuse.",
+    detail: "All API endpoints are protected by rate limiting, HTTP security headers (via Helmet), and input validation (Zod schemas) to prevent abuse.",
     badge: "API Security",
     color: "text-slate-600 dark:text-slate-400",
     bg: "bg-slate-50 dark:bg-slate-950/30",
@@ -62,28 +62,36 @@ const SECURITY_LAYERS = [
 ];
 
 const DATA_TYPES = [
-  { label: "Case details", where: "PostgreSQL (encrypted at rest)", local: true },
-  { label: "Evidence entries", where: "PostgreSQL (encrypted at rest)", local: true },
-  { label: "Communication scans", where: "PostgreSQL (encrypted at rest)", local: true },
+  { label: "Case details", where: "Encrypted localStorage (this device)", local: true },
+  { label: "Evidence entries", where: "Encrypted localStorage (this device)", local: true },
+  { label: "Communication scans", where: "Encrypted localStorage (this device)", local: true },
   { label: "Message thread text", where: "Processed transiently — not stored", local: false },
   { label: "Uploaded files / screenshots", where: "Secure object storage (AES-256)", local: true },
-  { label: "App preferences", where: "Browser localStorage (your device only)", local: true },
+  { label: "App preferences", where: "Encrypted localStorage (this device)", local: true },
 ];
 
 export default function DataPrivacy() {
   const [confirmClear, setConfirmClear] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const { toast } = useToast();
 
-  function handleExport() {
-    const json = dataManagement.exportAll();
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `caseclear-export-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast({ title: "Export downloaded", description: "Your data has been saved as a JSON file." });
+  async function handleExport() {
+    setExporting(true);
+    try {
+      const json = await dataManagement.exportAll();
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `fcc-export-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast({ title: "Export downloaded", description: "Your data has been saved as a JSON file." });
+    } catch {
+      toast({ title: "Export failed", description: "Unable to export data. Please try again.", variant: "destructive" });
+    } finally {
+      setExporting(false);
+    }
   }
 
   function handleClearData() {
@@ -109,7 +117,7 @@ export default function DataPrivacy() {
           <div>
             <p className="text-sm font-semibold text-primary mb-1">Family Court Companion AI Security Commitment</p>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              All data is encrypted in transit (TLS 1.3) and at rest (AES-256). Your case files are stored in secure cloud storage with strict access controls. We never share your data with third parties or use it to train AI models.
+              All locally stored data is encrypted with AES-256-GCM in your browser before being written to disk. The encryption key lives only in your active session — closing the tab wipes the key. Data is also encrypted in transit (TLS 1.3). We never share your data with third parties or use it to train AI models.
             </p>
           </div>
         </CardContent>
@@ -212,8 +220,8 @@ export default function DataPrivacy() {
                 <p className="text-sm font-medium">Export your data</p>
                 <p className="text-xs text-muted-foreground">Download all your locally stored case data as a JSON file.</p>
               </div>
-              <Button size="sm" variant="outline" className="h-8 text-xs shrink-0" onClick={handleExport}>
-                Export
+              <Button size="sm" variant="outline" className="h-8 text-xs shrink-0" onClick={handleExport} disabled={exporting}>
+                {exporting ? "Exporting…" : "Export"}
               </Button>
             </div>
 

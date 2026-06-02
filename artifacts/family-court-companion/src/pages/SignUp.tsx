@@ -14,8 +14,12 @@ export default function SignUp() {
   const [showPass, setShowPass] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const passwordTooShort = password.length > 0 && password.length < 8;
+  const canSubmit = agreed && email.trim().length > 0 && password.length >= 8 && !loading;
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background">
@@ -60,11 +64,37 @@ export default function SignUp() {
             </div>
           </div>
 
-          <div className="space-y-4">
+          <form
+            className="space-y-4"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!canSubmit) return;
+              setLoading(true);
+              setError(null);
+              try {
+                await loginAndStoreToken(email.trim(), password);
+                setLocation("/onboarding/state");
+              } catch {
+                setError("Account creation failed. Please try again.");
+              } finally {
+                setLoading(false);
+              }
+            }}
+          >
             <div className="space-y-1.5">
               <Label htmlFor="email">Email address</Label>
-              <Input id="email" type="email" placeholder="you@example.com" autoComplete="email" data-testid="input-email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                autoComplete="email"
+                data-testid="input-email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
+
             <div className="space-y-1.5">
               <Label htmlFor="password">Password</Label>
               <div className="relative">
@@ -75,6 +105,10 @@ export default function SignUp() {
                   autoComplete="new-password"
                   className="pr-10"
                   data-testid="input-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={8}
                 />
                 <button
                   type="button"
@@ -85,6 +119,9 @@ export default function SignUp() {
                   {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              {passwordTooShort && (
+                <p className="text-xs text-destructive">Password must be at least 8 characters.</p>
+              )}
             </div>
 
             <div className="flex items-start gap-3">
@@ -101,26 +138,16 @@ export default function SignUp() {
             </div>
 
             {error && <p className="text-sm text-destructive text-center">{error}</p>}
+
             <Button
+              type="submit"
               className="w-full h-11"
-              disabled={!agreed || loading || !email}
-              onClick={async () => {
-                setLoading(true);
-                setError(null);
-                try {
-                  await loginAndStoreToken(email);
-                  setLocation("/onboarding/state");
-                } catch {
-                  setError("Account creation failed. Please try again.");
-                } finally {
-                  setLoading(false);
-                }
-              }}
+              disabled={!canSubmit}
               data-testid="button-create-account"
             >
               {loading ? "Creating account…" : "Create Account"}
             </Button>
-          </div>
+          </form>
 
           <p className="text-center text-sm text-muted-foreground">
             Already have an account?{" "}

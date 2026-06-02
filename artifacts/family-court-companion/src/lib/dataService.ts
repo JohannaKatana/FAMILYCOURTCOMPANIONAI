@@ -1,67 +1,75 @@
 /**
- * CaseClear Data Service
+ * Family Court Companion AI — Data Service
  *
- * Thin persistence layer. Currently backed by localStorage so the app works
- * immediately without a backend connection. Designed to be swapped for API
- * calls (see apiService below) once auth is wired up — just replace the
- * storage.* calls with fetch calls to /api/...
+ * Persistence layer backed by localStorage with AES-256-GCM encryption via
+ * the Web Crypto API. All writes are encrypted; all reads are decrypted. The
+ * encryption key lives only in sessionStorage and memory — it is never
+ * written to localStorage — so stored blobs are unreadable without an active
+ * authenticated session.
  *
  * Security model:
- *  - All data is stored in the browser's localStorage under a namespaced key.
- *  - In production, data travels over TLS 1.3 and is stored in PostgreSQL
- *    with AES-256 encryption at rest (Replit managed).
- *  - User data is scoped to the authenticated user ID — no cross-user access.
- *  - No data is ever sent to third-party services or used to train AI models.
+ *  - Data is encrypted with AES-256-GCM before being written to localStorage.
+ *  - The encryption key is stored in sessionStorage (cleared on tab close).
+ *  - Any JavaScript on a different origin cannot read localStorage.
+ *  - Migrating to server-side storage behind the authenticated API is the next
+ *    step — these methods are designed to be swapped for API fetch calls.
  */
 
 import type { EvidenceEntry } from "@/data/mockData";
+import { cryptoService } from "./cryptoService";
 
-const NS = "caseclear:v1";
+const NS = "fcc:v2";
 
 function key(segment: string) {
   return `${NS}:${segment}`;
 }
 
-function load<T>(segment: string, fallback: T): T {
+async function load<T>(segment: string, fallback: T): Promise<T> {
   try {
     const raw = localStorage.getItem(key(segment));
-    return raw ? (JSON.parse(raw) as T) : fallback;
+    if (!raw) return fallback;
+    const decrypted = await cryptoService.decrypt(raw);
+    if (!decrypted) return fallback;
+    return JSON.parse(decrypted) as T;
   } catch {
     return fallback;
   }
 }
 
-function save<T>(segment: string, value: T): void {
+async function store<T>(segment: string, value: T): Promise<void> {
   try {
-    localStorage.setItem(key(segment), JSON.stringify(value));
+    const plaintext = JSON.stringify(value);
+    const encrypted = await cryptoService.encrypt(plaintext);
+    localStorage.setItem(key(segment), encrypted);
   } catch {
-    console.warn("[CaseClear] localStorage write failed — storage may be full.");
+    console.warn("[FCC] localStorage write failed — storage may be full or key unavailable.");
   }
 }
 
 // ── Evidence ──────────────────────────────────────────────────────────────────
 
 export const evidenceService = {
-  getAll(): EvidenceEntry[] {
+  async getAll(): Promise<EvidenceEntry[]> {
     return load<EvidenceEntry[]>("evidence", []);
   },
 
-  save(entries: EvidenceEntry[]): void {
-    save("evidence", entries);
+  async save(entries: EvidenceEntry[]): Promise<void> {
+    return store("evidence", entries);
   },
 
-  add(entry: EvidenceEntry): void {
-    const all = evidenceService.getAll();
-    evidenceService.save([...all, entry]);
+  async add(entry: EvidenceEntry): Promise<void> {
+    const all = await evidenceService.getAll();
+    return evidenceService.save([...all, entry]);
   },
 
-  update(id: string, patch: Partial<EvidenceEntry>): void {
-    const all = evidenceService.getAll();
-    evidenceService.save(all.map((e) => (e.id === id ? { ...e, ...patch } : e)));
+  async update(id: string, patch: Partial<EvidenceEntry>): Promise<void> {
+    const all = await evidenceService.getAll();
+    return evidenceService.save(all.map((e) => (e.id === id ? { ...e, ...patch } : e)));
   },
 
-  remove(id: string): void {
-    evidenceService.save(evidenceService.getAll().filter((e) => e.id !== id));
+  async remove(id: string): Promise<void> {
+    const all = await evidenceService.getAll();
+    return evidenceService.save(all.filter((e) => e.id !== id));
   },
 };
 
@@ -76,20 +84,22 @@ export type StoredScan = {
 };
 
 export const scanService = {
-  getAll(): StoredScan[] {
+  async getAll(): Promise<StoredScan[]> {
     return load<StoredScan[]>("scans", []);
   },
 
-  save(scans: StoredScan[]): void {
-    save("scans", scans);
+  async save(scans: StoredScan[]): Promise<void> {
+    return store("scans", scans);
   },
 
-  add(scan: StoredScan): void {
-    scanService.save([scan, ...scanService.getAll()]);
+  async add(scan: StoredScan): Promise<void> {
+    const all = await scanService.getAll();
+    return scanService.save([scan, ...all]);
   },
 
-  remove(id: string): void {
-    scanService.save(scanService.getAll().filter((s) => s.id !== id));
+  async remove(id: string): Promise<void> {
+    const all = await scanService.getAll();
+    return scanService.save(all.filter((s) => s.id !== id));
   },
 };
 
@@ -114,11 +124,12 @@ const DEFAULT_PREFS: CasePrefs = {
 };
 
 export const casePrefsService = {
-  get(): CasePrefs {
+  async get(): Promise<CasePrefs> {
     return load<CasePrefs>("case_prefs", DEFAULT_PREFS);
   },
-  set(prefs: Partial<CasePrefs>): void {
-    save("case_prefs", { ...casePrefsService.get(), ...prefs });
+  async set(prefs: Partial<CasePrefs>): Promise<void> {
+    const current = await casePrefsService.get();
+    return store("case_prefs", { ...current, ...prefs });
   },
 };
 
@@ -126,14 +137,19 @@ export const casePrefsService = {
 
 export const dataManagement = {
   /** Export all stored data as a JSON blob for download. */
-  exportAll(): string {
+  async exportAll(): Promise<string> {
+    const [evidence, scans, casePrefs] = await Promise.all([
+      evidenceService.getAll(),
+      scanService.getAll(),
+      casePrefsService.get(),
+    ]);
     return JSON.stringify(
       {
         exportedAt: new Date().toISOString(),
-        version: "1",
-        evidence: evidenceService.getAll(),
-        scans: scanService.getAll(),
-        casePrefs: casePrefsService.get(),
+        version: "2",
+        evidence,
+        scans,
+        casePrefs,
       },
       null,
       2,
@@ -145,7 +161,7 @@ export const dataManagement = {
     const keysToRemove: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k?.startsWith(NS)) keysToRemove.push(k);
+      if (k?.startsWith(NS) || k?.startsWith("caseclear:v1")) keysToRemove.push(k);
     }
     keysToRemove.forEach((k) => localStorage.removeItem(k));
   },
@@ -155,7 +171,8 @@ export const dataManagement = {
     let total = 0;
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k?.startsWith(NS)) total += (localStorage.getItem(k) ?? "").length * 2;
+      if (k?.startsWith(NS) || k?.startsWith("caseclear:v1"))
+        total += (localStorage.getItem(k) ?? "").length * 2;
     }
     return total;
   },

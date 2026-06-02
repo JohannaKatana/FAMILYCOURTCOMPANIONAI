@@ -26,11 +26,11 @@ export const authToken = {
   },
 };
 
-export async function loginAndStoreToken(email: string): Promise<void> {
+export async function loginAndStoreToken(email: string, password: string): Promise<void> {
   const res = await fetch("/api/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
+    body: JSON.stringify({ email, password }),
   });
   if (!res.ok) throw new Error("Login failed");
   const data = (await res.json()) as { token: string; userId: string };

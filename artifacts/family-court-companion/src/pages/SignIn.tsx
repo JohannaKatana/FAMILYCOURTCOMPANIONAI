@@ -12,8 +12,11 @@ export default function SignIn() {
   const [, setLocation] = useLocation();
   const [showPass, setShowPass] = useState(false);
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const canSubmit = email.trim().length > 0 && password.length > 0 && !loading;
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background">
@@ -58,11 +61,37 @@ export default function SignIn() {
             </div>
           </div>
 
-          <div className="space-y-4">
+          <form
+            className="space-y-4"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!canSubmit) return;
+              setLoading(true);
+              setError(null);
+              try {
+                await loginAndStoreToken(email.trim(), password);
+                setLocation("/home");
+              } catch {
+                setError("Incorrect email or password. Please try again.");
+              } finally {
+                setLoading(false);
+              }
+            }}
+          >
             <div className="space-y-1.5">
               <Label htmlFor="email">Email address</Label>
-              <Input id="email" type="email" placeholder="you@example.com" autoComplete="email" data-testid="input-email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                autoComplete="email"
+                data-testid="input-email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
+
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
@@ -76,6 +105,9 @@ export default function SignIn() {
                   autoComplete="current-password"
                   className="pr-10"
                   data-testid="input-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
                 <button
                   type="button"
@@ -89,26 +121,16 @@ export default function SignIn() {
             </div>
 
             {error && <p className="text-sm text-destructive text-center">{error}</p>}
+
             <Button
+              type="submit"
               className="w-full h-11"
-              disabled={loading || !email}
-              onClick={async () => {
-                setLoading(true);
-                setError(null);
-                try {
-                  await loginAndStoreToken(email);
-                  setLocation("/home");
-                } catch {
-                  setError("Sign in failed. Please try again.");
-                } finally {
-                  setLoading(false);
-                }
-              }}
+              disabled={!canSubmit}
               data-testid="button-sign-in"
             >
               {loading ? "Signing in…" : "Sign In"}
             </Button>
-          </div>
+          </form>
 
           <p className="text-center text-sm text-muted-foreground">
             Don't have an account?{" "}
