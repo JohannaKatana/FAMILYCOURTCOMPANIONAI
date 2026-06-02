@@ -2,6 +2,7 @@ import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { evidenceTable, casesTable, insertEvidenceSchema } from "@workspace/db/schema";
 import { eq, and } from "drizzle-orm";
+import { requireAuth } from "../middlewares/auth";
 
 const router: IRouter = Router();
 
@@ -10,13 +11,12 @@ async function verifyCaseOwner(caseId: string, userId: string): Promise<boolean>
   return !!c && c.userId === userId;
 }
 
-router.get("/cases/:caseId/evidence", async (req, res) => {
+router.get("/cases/:caseId/evidence", requireAuth, async (req, res) => {
   try {
-    const userId = req.headers["x-user-id"] as string | undefined;
-    if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
-    if (!await verifyCaseOwner(req.params.caseId, userId)) { res.status(404).json({ error: "Not found" }); return; }
-    const entries = await db.select().from(evidenceTable)
-      .where(eq(evidenceTable.caseId, req.params.caseId));
+    const userId = res.locals["userId"] as string;
+    const caseId = req.params["caseId"] as string;
+    if (!await verifyCaseOwner(caseId, userId)) { res.status(404).json({ error: "Not found" }); return; }
+    const entries = await db.select().from(evidenceTable).where(eq(evidenceTable.caseId, caseId));
     res.json(entries);
   } catch (err) {
     req.log.error(err, "GET /cases/:caseId/evidence failed");
@@ -24,12 +24,12 @@ router.get("/cases/:caseId/evidence", async (req, res) => {
   }
 });
 
-router.post("/cases/:caseId/evidence", async (req, res) => {
+router.post("/cases/:caseId/evidence", requireAuth, async (req, res) => {
   try {
-    const userId = req.headers["x-user-id"] as string | undefined;
-    if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
-    if (!await verifyCaseOwner(req.params.caseId, userId)) { res.status(404).json({ error: "Not found" }); return; }
-    const parsed = insertEvidenceSchema.safeParse({ ...req.body, caseId: req.params.caseId });
+    const userId = res.locals["userId"] as string;
+    const caseId = req.params["caseId"] as string;
+    if (!await verifyCaseOwner(caseId, userId)) { res.status(404).json({ error: "Not found" }); return; }
+    const parsed = insertEvidenceSchema.safeParse({ ...req.body, caseId });
     if (!parsed.success) { res.status(400).json({ error: parsed.error.flatten() }); return; }
     const [created] = await db.insert(evidenceTable).values(parsed.data).returning();
     res.status(201).json(created);
@@ -39,14 +39,15 @@ router.post("/cases/:caseId/evidence", async (req, res) => {
   }
 });
 
-router.put("/cases/:caseId/evidence/:id", async (req, res) => {
+router.put("/cases/:caseId/evidence/:id", requireAuth, async (req, res) => {
   try {
-    const userId = req.headers["x-user-id"] as string | undefined;
-    if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
-    if (!await verifyCaseOwner(req.params.caseId, userId)) { res.status(404).json({ error: "Not found" }); return; }
+    const userId = res.locals["userId"] as string;
+    const caseId = req.params["caseId"] as string;
+    const id = req.params["id"] as string;
+    if (!await verifyCaseOwner(caseId, userId)) { res.status(404).json({ error: "Not found" }); return; }
     const [updated] = await db.update(evidenceTable)
       .set({ ...req.body, updatedAt: new Date() })
-      .where(and(eq(evidenceTable.id, req.params.id), eq(evidenceTable.caseId, req.params.caseId)))
+      .where(and(eq(evidenceTable.id, id), eq(evidenceTable.caseId, caseId)))
       .returning();
     if (!updated) { res.status(404).json({ error: "Not found" }); return; }
     res.json(updated);
@@ -56,13 +57,14 @@ router.put("/cases/:caseId/evidence/:id", async (req, res) => {
   }
 });
 
-router.delete("/cases/:caseId/evidence/:id", async (req, res) => {
+router.delete("/cases/:caseId/evidence/:id", requireAuth, async (req, res) => {
   try {
-    const userId = req.headers["x-user-id"] as string | undefined;
-    if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
-    if (!await verifyCaseOwner(req.params.caseId, userId)) { res.status(404).json({ error: "Not found" }); return; }
+    const userId = res.locals["userId"] as string;
+    const caseId = req.params["caseId"] as string;
+    const id = req.params["id"] as string;
+    if (!await verifyCaseOwner(caseId, userId)) { res.status(404).json({ error: "Not found" }); return; }
     await db.delete(evidenceTable)
-      .where(and(eq(evidenceTable.id, req.params.id), eq(evidenceTable.caseId, req.params.caseId)));
+      .where(and(eq(evidenceTable.id, id), eq(evidenceTable.caseId, caseId)));
     res.status(204).send();
   } catch (err) {
     req.log.error(err, "DELETE /cases/:caseId/evidence/:id failed");

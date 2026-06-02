@@ -2,13 +2,13 @@ import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { casesTable, insertCaseSchema } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
+import { requireAuth } from "../middlewares/auth";
 
 const router: IRouter = Router();
 
-router.get("/cases", async (req, res) => {
+router.get("/cases", requireAuth, async (req, res) => {
   try {
-    const userId = req.headers["x-user-id"] as string | undefined;
-    if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
+    const userId = res.locals["userId"] as string;
     const cases = await db.select().from(casesTable).where(eq(casesTable.userId, userId));
     res.json(cases);
   } catch (err) {
@@ -17,10 +17,9 @@ router.get("/cases", async (req, res) => {
   }
 });
 
-router.post("/cases", async (req, res) => {
+router.post("/cases", requireAuth, async (req, res) => {
   try {
-    const userId = req.headers["x-user-id"] as string | undefined;
-    if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
+    const userId = res.locals["userId"] as string;
     const parsed = insertCaseSchema.safeParse({ ...req.body, userId });
     if (!parsed.success) { res.status(400).json({ error: parsed.error.flatten() }); return; }
     const [created] = await db.insert(casesTable).values(parsed.data).returning();
@@ -31,12 +30,11 @@ router.post("/cases", async (req, res) => {
   }
 });
 
-router.get("/cases/:id", async (req, res) => {
+router.get("/cases/:id", requireAuth, async (req, res) => {
   try {
-    const userId = req.headers["x-user-id"] as string | undefined;
-    if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
-    const [c] = await db.select().from(casesTable)
-      .where(eq(casesTable.id, req.params.id));
+    const userId = res.locals["userId"] as string;
+    const id = req.params["id"] as string;
+    const [c] = await db.select().from(casesTable).where(eq(casesTable.id, id));
     if (!c || c.userId !== userId) { res.status(404).json({ error: "Not found" }); return; }
     res.json(c);
   } catch (err) {
@@ -45,15 +43,15 @@ router.get("/cases/:id", async (req, res) => {
   }
 });
 
-router.put("/cases/:id", async (req, res) => {
+router.put("/cases/:id", requireAuth, async (req, res) => {
   try {
-    const userId = req.headers["x-user-id"] as string | undefined;
-    if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
-    const [existing] = await db.select().from(casesTable).where(eq(casesTable.id, req.params.id));
+    const userId = res.locals["userId"] as string;
+    const id = req.params["id"] as string;
+    const [existing] = await db.select().from(casesTable).where(eq(casesTable.id, id));
     if (!existing || existing.userId !== userId) { res.status(404).json({ error: "Not found" }); return; }
     const [updated] = await db.update(casesTable)
       .set({ ...req.body, updatedAt: new Date() })
-      .where(eq(casesTable.id, req.params.id))
+      .where(eq(casesTable.id, id))
       .returning();
     res.json(updated);
   } catch (err) {
@@ -62,13 +60,13 @@ router.put("/cases/:id", async (req, res) => {
   }
 });
 
-router.delete("/cases/:id", async (req, res) => {
+router.delete("/cases/:id", requireAuth, async (req, res) => {
   try {
-    const userId = req.headers["x-user-id"] as string | undefined;
-    if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
-    const [existing] = await db.select().from(casesTable).where(eq(casesTable.id, req.params.id));
+    const userId = res.locals["userId"] as string;
+    const id = req.params["id"] as string;
+    const [existing] = await db.select().from(casesTable).where(eq(casesTable.id, id));
     if (!existing || existing.userId !== userId) { res.status(404).json({ error: "Not found" }); return; }
-    await db.delete(casesTable).where(eq(casesTable.id, req.params.id));
+    await db.delete(casesTable).where(eq(casesTable.id, id));
     res.status(204).send();
   } catch (err) {
     req.log.error(err, "DELETE /cases/:id failed");

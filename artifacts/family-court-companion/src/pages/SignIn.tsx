@@ -3,13 +3,17 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ShieldCheck, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { SiGoogle, SiApple } from "react-icons/si";
 import { motion } from "framer-motion";
+import { loginAndStoreToken } from "@/lib/authToken";
 
 export default function SignIn() {
   const [, setLocation] = useLocation();
   const [showPass, setShowPass] = useState(false);
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background">
@@ -57,7 +61,7 @@ export default function SignIn() {
           <div className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="email">Email address</Label>
-              <Input id="email" type="email" placeholder="you@example.com" autoComplete="email" data-testid="input-email" />
+              <Input id="email" type="email" placeholder="you@example.com" autoComplete="email" data-testid="input-email" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
@@ -84,12 +88,25 @@ export default function SignIn() {
               </div>
             </div>
 
+            {error && <p className="text-sm text-destructive text-center">{error}</p>}
             <Button
               className="w-full h-11"
-              onClick={() => setLocation("/home")}
+              disabled={loading || !email}
+              onClick={async () => {
+                setLoading(true);
+                setError(null);
+                try {
+                  await loginAndStoreToken(email);
+                  setLocation("/home");
+                } catch {
+                  setError("Sign in failed. Please try again.");
+                } finally {
+                  setLoading(false);
+                }
+              }}
               data-testid="button-sign-in"
             >
-              Sign In
+              {loading ? "Signing in…" : "Sign In"}
             </Button>
           </div>
 

@@ -4,14 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ShieldCheck, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { SiGoogle, SiApple } from "react-icons/si";
 import { motion } from "framer-motion";
+import { loginAndStoreToken } from "@/lib/authToken";
 
 export default function SignUp() {
   const [, setLocation] = useLocation();
   const [showPass, setShowPass] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background">
@@ -59,7 +63,7 @@ export default function SignUp() {
           <div className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="email">Email address</Label>
-              <Input id="email" type="email" placeholder="you@example.com" autoComplete="email" data-testid="input-email" />
+              <Input id="email" type="email" placeholder="you@example.com" autoComplete="email" data-testid="input-email" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="password">Password</Label>
@@ -96,13 +100,25 @@ export default function SignUp() {
               </Label>
             </div>
 
+            {error && <p className="text-sm text-destructive text-center">{error}</p>}
             <Button
               className="w-full h-11"
-              disabled={!agreed}
-              onClick={() => setLocation("/onboarding/state")}
+              disabled={!agreed || loading || !email}
+              onClick={async () => {
+                setLoading(true);
+                setError(null);
+                try {
+                  await loginAndStoreToken(email);
+                  setLocation("/onboarding/state");
+                } catch {
+                  setError("Account creation failed. Please try again.");
+                } finally {
+                  setLoading(false);
+                }
+              }}
               data-testid="button-create-account"
             >
-              Create Account
+              {loading ? "Creating account…" : "Create Account"}
             </Button>
           </div>
 
