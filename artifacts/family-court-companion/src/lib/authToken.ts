@@ -32,7 +32,24 @@ export async function loginAndStoreToken(email: string, password: string): Promi
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
-  if (!res.ok) throw new Error("Login failed");
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(body.error ?? "Login failed");
+  }
+  const data = (await res.json()) as { token: string; userId: string };
+  authToken.set(data.token, data.userId);
+}
+
+export async function registerAndStoreToken(email: string, password: string): Promise<void> {
+  const res = await fetch("/api/auth/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(body.error ?? "Registration failed");
+  }
   const data = (await res.json()) as { token: string; userId: string };
   authToken.set(data.token, data.userId);
 }

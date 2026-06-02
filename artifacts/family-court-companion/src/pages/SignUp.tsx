@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff } from "lucide-react";
 import { SiGoogle, SiApple } from "react-icons/si";
 import { motion } from "framer-motion";
-import { loginAndStoreToken } from "@/lib/authToken";
+import { registerAndStoreToken } from "@/lib/authToken";
 
 export default function SignUp() {
   const [, setLocation] = useLocation();
@@ -72,10 +72,10 @@ export default function SignUp() {
               setLoading(true);
               setError(null);
               try {
-                await loginAndStoreToken(email.trim(), password);
+                await registerAndStoreToken(email.trim(), password);
                 setLocation("/onboarding/state");
-              } catch {
-                setError("Account creation failed. Please try again.");
+              } catch (err) {
+                setError(err instanceof Error ? err.message : "Account creation failed. Please try again.");
               } finally {
                 setLoading(false);
               }
